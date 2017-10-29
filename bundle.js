@@ -1,12 +1,18 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 $(document).ready(function() {
     const sentiment = require('sentiment');
-    // https://www.reddit.com/r/malelivingspace/comments/79dgls/art_ideas_for_offcenter_bedroom_wall.json
+
+    let infoBoxes = [
+        new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
+        new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
+        new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
+        new SquareBox('created', 'information-container', 1500, 'right', 66.66, 'fa-calendar'),
+        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, '')
+    ]
 
     let totalScore = 0;
     let commentCount = 0;
     let title = '';
-    let createdOn;
 
     let getData = (url) => {
         $.getJSON(url, (threadData) => {
@@ -19,7 +25,12 @@ $(document).ready(function() {
     let getPostDetails = (data) => {
         const postData = data.data.children[0].data;
         title = postData.title;
-        createdOn = new Date(postData.created);
+
+        infoBoxes[0].updateBody(postData.title);
+        
+        infoBoxes[1].updateBody(postData.num_comments);
+        infoBoxes[2].updateBody(postData.ups);
+        infoBoxes[3].updateBody(new Date(postData.created).toDateString());
     }
 
     let getComments = (comments) => {
@@ -43,29 +54,25 @@ $(document).ready(function() {
             totalScore += sentimentResult.score;
             commentCount += 1;
         });
+
+        infoBoxes[4].updateBody(`Average Sentiment: ${Math.round(totalScore/commentCount * 100)}%`);
     }
 
     let displayResults = () => {
+        $('.main-container').hide();
         $('.results-container').show();
 
-        setTimeout(() => {
-            $('.title').css('top', '0%');
-        }, 1);
+        infoBoxes.forEach(infoBox => {
+            infoBox.animate();
+        });
 
-        setTimeout(() => {
-            $('.comment-count').css('top', '33.33%');
-        }, 1000);
+        // setTimeout(() => {
+        //     $('.title').css('top', '0%');
+        // }, 1);
 
-        setTimeout(() => {
-            $('.sentiment').css('top', '66.67%');
-        }, 2000);
-
-        $('.search-container').hide();
-        $('.heading').hide();
-
-        $('.title').text(title);
-        $('.comment-count').text(`Total Comments: ${commentCount}`);
-        $('.sentiment').text(`Average Sentiment: ${Math.round(totalScore/commentCount * 100)}%`);
+        // setTimeout(() => {
+        //     $('.sentiment').css('top', '66.67%');
+        // }, 2000);
     };
 
     $('#search').click(() => {
@@ -80,6 +87,67 @@ $(document).ready(function() {
         getData(url);
     });
 });
+
+class InfoBox {
+    constructor(selector, parentSelector, delay, animateFrom, animatePos) {
+        this.selector = selector;
+        this.parentSelector = parentSelector;
+        this.animationDelay = delay;
+        this.animateFrom = animateFrom;
+        this.animatePos = animatePos;
+    }
+
+    updateBody(data) {
+        $(`.${this.selector} .body`).text(data);
+    }
+
+    animate() {
+        setTimeout(() => {
+            $(`.${this.selector}`).css(this.animateFrom, `${this.animatePos}%`)
+            
+        }, this.animationDelay);
+    }
+}
+
+class SquareBox extends InfoBox {
+    constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, icon) {
+        super(selector, parentSelector, animationDelay, animateFrom, animatePos);
+        
+        this.icon = icon;
+
+        this.generateHtmlAndCss();
+    }
+
+    generateHtmlAndCss() {
+        $(`.${this.parentSelector}`).append(`
+        <div class="${this.selector}" style="${this.animateFrom}: 100%">
+            <div class="heading abs-center">
+                <i class="fa ${this.icon}"></i>
+            </div>
+
+            <div class="body abs-center">
+            </div>
+        </div>`);
+    }
+}
+
+class RectangleBox extends InfoBox {
+    constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, title) {
+        super(selector, parentSelector, animationDelay, animateFrom, animatePos);
+        
+        this.title = title;
+
+        this.generateHtmlAndCss();
+    }
+
+    generateHtmlAndCss() {
+        $(`.${this.parentSelector}`).append(`
+            <div class="${this.selector}" style="${this.animateFrom}: 100%">
+                <span class="body"></span>
+            </div>
+        `);
+    }
+}
 },{"sentiment":3}],2:[function(require,module,exports){
 module.exports={
     "😂": 1,

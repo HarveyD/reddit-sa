@@ -9,29 +9,33 @@
   <title> Reddit Sentiment Analysis </title>
 
   <link rel="stylesheet" href="css/main.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 
 <body>
   <script src="bundle.js"></script>
-  <div class="heading abs-center">
-    <h1> Reddit Thread Sentiment Analysis </h1>
-  </div>
 
-  <div class="search-container abs-center">
-    <div class="input-container">
-        <input id="search-input" type="text">
-    </div>
+  <div class="main-container">
+		<div class="heading abs-center">
+				<h1> Reddit Thread Sentiment Analysis </h1>
+		</div>
 
-    <div class="buttons-container">
-        <button id="search" type="button"> Analyse Sentiment </button>
-    </div>
-  </div>
+		<div class="search-container">
+				<div class="input-container">
+						<input id="search-input" type="text">
+				</div>
+		
+				<div class="buttons-container">
+						<button id="search" type="button"> Analyse Sentiment </button>
+				</div>
+		</div>
+	</div>
 
   <div class="results-container">
-      <div class="title"></div>
-      <div class="comment-count"></div>
-      <div class="sentiment"></div>
+
+    <div class="information-container"></div>
+
   </div>
 </body>
 

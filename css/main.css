@@ -7,6 +7,11 @@
     overflow: hidden;
 } 
 
+body > div {
+    height: 100%;
+    width: 100%;
+}
+
 .abs-center {
     width: 100%;
     display: inline-flex;
@@ -15,7 +20,7 @@
     text-align: center;
 }
 
-.heading {
+.main-container > .heading {
     height: 25%;
 }
 
@@ -23,6 +28,7 @@
     height: 50%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .input-container {
@@ -32,7 +38,7 @@
     width: 100%;
 }
 
-.input-container input {
+.input-container > input {
     align-items: center;
     font-size: 32px;
     height: 48px;
@@ -60,14 +66,11 @@
 }
 
 .results-container {
-    height: 100%;
-    width: 100%;
     display: none;
 }
 
-.results-container div {
+.results-container > div {
     position: absolute;
-    height: 33%;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -75,19 +78,77 @@
     text-align: center;
     color: white;
     font-size: 48px;
-    top: 100%;
 
     transition: all 1.5s ease-out;
 }
 
 .results-container .title {
+    height: 15%;
     background-color: rgb(32, 165, 199);
+    bottom: 100%;
 }
 
-.results-container .comment-count {
-    background-color: rgb(67, 123, 226);
+.results-container .information-container {
+    height: 35%;
 }
 
 .results-container .sentiment {
-    background-color: rgb(125, 67, 219);
+    height: 35%;
+}
+
+.results-container .footer {
+    height: 10%;
+}
+
+.information-container {
+    top: 15%;
+}
+    
+.information-container > div {
+    position: absolute;
+    transition: 1.5s all ease;
+    width: 33.33%;
+    height: 100%;
+    right: 100%;
+}
+
+.information-container > div > .heading {
+    height: 25%;
+}
+
+.information-container > div > .body {
+    height: 75%;
+}
+
+.information-container > .comment-count {
+    background-color: rgb(67, 123, 226);
+}
+
+.comment-count > .heading {
+    background-color: rgb(29, 76, 156);
+}
+
+.information-container > .upvotes {
+    background-color: rgb(233, 172, 91);
+}
+
+.upvotes > .heading {
+    background-color: rgb(212, 134, 32);
+}
+
+.information-container > .created {
+    background-color: rgb(197, 100, 235);
+}
+
+.created > .heading {
+    background-color: rgb(142, 25, 189);
+}
+
+.results-container > .sentiment {
+    background-color: rgb(219, 204, 67);
+}
+
+.footer > button {
+    width: 50%;
+    text-align: center;
 }
