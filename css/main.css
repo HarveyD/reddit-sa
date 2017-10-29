@@ -31,6 +31,15 @@ body > div {
     justify-content: center;
 }
 
+button {
+    outline: none;
+}
+
+#search > i {
+    animation: rotating 2s linear infinite;
+    -webkit-animation: rotating 2s linear infinite;
+}
+
 .input-container {
     display: flex;
     justify-content: center;
@@ -48,14 +57,14 @@ body > div {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08)
 }
 
-.buttons-container {
+.search-buttons-container {
     width: 100%;
     padding-top: 16px;
     display: flex;
     justify-content: center;
 }
 
-.buttons-container button {
+.search-buttons-container button {
     width: 164px;
     height: 64px;
     color: white;
@@ -77,9 +86,9 @@ body > div {
     align-items: center;
     text-align: center;
     color: white;
-    font-size: 48px;
+    font-size: 32px;
 
-    transition: all 1.5s ease-out;
+    transition: all 1.5s ease-in-out;
 }
 
 .results-container .title {
@@ -148,7 +157,47 @@ body > div {
     background-color: rgb(219, 204, 67);
 }
 
-.footer > button {
+.buttons-container {
+    top: 85%;
+    height: 15%;
+}
+
+.buttons-container > button {
+    position: absolute;
     width: 50%;
     text-align: center;
+    border: 0px;
+    height: 100%;
+    color: white;
+    font-size: 24px;
+
+    transition: all 1.5s ease-out;
+}
+
+.buttons-container > .search-again {
+    background-color: rgb(101, 194, 206);
+}
+
+.buttons-container > .feeling-lucky {
+    background-color: rgb(148, 223, 233);
+}
+
+
+/* Custom Animations */
+@keyframes rotating {
+    from{
+        -webkit-transform: rotate(0deg);
+    }
+    to{
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes rotating {
+    from{
+        -webkit-transform: rotate(0deg);
+    }
+    to{
+        -webkit-transform: rotate(360deg);
+    }
 }

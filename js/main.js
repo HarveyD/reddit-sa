@@ -5,19 +5,37 @@ $(document).ready(function() {
         new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
         new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
         new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
-        new SquareBox('created', 'information-container', 1500, 'right', 66.66, 'fa-calendar'),
-        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, '')
+        new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
+        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, ''),
+        new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
+        new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
     ]
 
     let totalScore = 0;
     let commentCount = 0;
-    let title = '';
 
-    let getData = (url) => {
+    let randomUrl = 'https://www.reddit.com/random/.json';
+
+    let highestScore = Number.MIN_SAFE_INTEGER;
+    let mostPositive = '';
+
+    let lowestScore = Number.MAX_SAFE_INTEGER;
+    let mostNegative = '';
+
+    let getData = (url = randomUrl) => {
+        $('#search').html(`<i class="fa fa-refresh"></i>`);
+
         $.getJSON(url, (threadData) => {
+            if (threadData.error && threadData.error === 404) {
+                return; 
+            }
+
             getPostDetails(threadData[0]);
             getComments(threadData[1].data);
             displayResults();
+        })
+        .done(() => {
+            $('#search').html('Analyse');
         });
     };
 
@@ -44,12 +62,22 @@ $(document).ready(function() {
                 return;
             }
 
-
             if (comment.data.replies.data) {
                 getComments(comment.data.replies.data);
             }
 
             const sentimentResult = sentiment(commentData);
+
+            if (sentimentResult.score > highestScore) {
+                highestScore = sentimentResult.score;
+                mostPositive = commentData;
+            }
+
+            if (sentimentResult.score < lowestScore) {
+                lowestScore = sentimentResult.score;
+                mostNegative = commentData;
+            }
+
             totalScore += sentimentResult.score;
             commentCount += 1;
         });
@@ -65,13 +93,8 @@ $(document).ready(function() {
             infoBox.animate();
         });
 
-        // setTimeout(() => {
-        //     $('.title').css('top', '0%');
-        // }, 1);
-
-        // setTimeout(() => {
-        //     $('.sentiment').css('top', '66.67%');
-        // }, 2000);
+        console.log(mostPositive);
+        console.log(mostNegative);
     };
 
     $('#search').click(() => {
@@ -84,6 +107,14 @@ $(document).ready(function() {
         url += '.json';
 
         getData(url);
+    });
+
+    $('#random').click(() => {
+        getData();
+    });
+
+    $('.feeling-lucky').click(() => {
+        getData();
     });
 });
 
@@ -111,7 +142,6 @@ class InfoBox {
 class SquareBox extends InfoBox {
     constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, icon) {
         super(selector, parentSelector, animationDelay, animateFrom, animatePos);
-        
         this.icon = icon;
 
         this.generateHtmlAndCss();
@@ -133,7 +163,6 @@ class SquareBox extends InfoBox {
 class RectangleBox extends InfoBox {
     constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, title) {
         super(selector, parentSelector, animationDelay, animateFrom, animatePos);
-        
         this.title = title;
 
         this.generateHtmlAndCss();
@@ -144,6 +173,23 @@ class RectangleBox extends InfoBox {
             <div class="${this.selector}" style="${this.animateFrom}: 100%">
                 <span class="body"></span>
             </div>
+        `);
+    }
+}
+
+class ButtonBox extends InfoBox {
+    constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, title) {
+        super(selector, parentSelector, animationDelay, animateFrom, animatePos);
+        this.title = title;
+
+        this.generateHtmlAndCss();
+    }
+
+    generateHtmlAndCss() {
+        $(`.${this.parentSelector}`).append(`
+            <button class="${this.selector}" style="${this.animateFrom}: 100%">
+                ${this.title}
+            </button>
         `);
     }
 }
