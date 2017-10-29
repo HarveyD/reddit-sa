@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Reddit Sentiment Analysis </title>
+
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+  <script src="bundle.js"></script>
+  <div class="heading abs-center">
+    <h1> Reddit Thread Sentiment Analysis </h1>
+  </div>
+
+  <div class="search-container abs-center">
+    <div class="input-container">
+        <input id="search-input" type="text">
+    </div>
+
+    <div class="buttons-container">
+        <button id="search" type="button"> Analyse Sentiment </button>
+    </div>
+  </div>
+
+  <div class="results-container">
+      <div class="title"></div>
+      <div class="comment-count"></div>
+      <div class="sentiment"></div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "reddit-sa",
+  "version": "1.0.0",
+  "description": "Sentiment Analaysis for Reddit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Harvey Delaney",
+  "license": "ISC"
+}
