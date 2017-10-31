@@ -3,6 +3,7 @@ $(document).ready(function() {
 
     let infoBoxes = [
         new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
+        new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75,  ''),
         new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
         new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
         new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
@@ -30,8 +31,17 @@ $(document).ready(function() {
                 return; 
             }
 
-            getPostDetails(threadData[0]);
-            getComments(threadData[1].data);
+            const postData = threadData[0].data.children[0].data;
+            const commentData = threadData[1].data;
+
+            if (!hasComments(postData)) {
+                return getData();
+            }
+        
+            populateInfoBoxes(postData);
+            getComments(commentData);
+            infoBoxes[5].updateBody(`Average Sentiment: ${Math.round(totalScore/commentCount * 100)}%`);
+            
             displayResults();
         })
         .done(() => {
@@ -39,15 +49,22 @@ $(document).ready(function() {
         });
     };
 
-    let getPostDetails = (data) => {
-        const postData = data.data.children[0].data;
+    let hasComments = (postData) => {
+        if (postData.num_comments > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    let populateInfoBoxes = (postData) => {
         title = postData.title;
 
         infoBoxes[0].updateBody(postData.title);
-        
-        infoBoxes[1].updateBody(postData.num_comments);
-        infoBoxes[2].updateBody(postData.ups);
-        infoBoxes[3].updateBody(new Date(postData.created).toDateString());
+        infoBoxes[1].updateBody(postData.subreddit_name_prefixed);
+        infoBoxes[2].updateBody(postData.num_comments);
+        infoBoxes[3].updateBody(postData.ups);
+        infoBoxes[4].updateBody(new Date(postData.created_utc).toDateString());
     }
 
     let getComments = (comments) => {
@@ -81,8 +98,6 @@ $(document).ready(function() {
             totalScore += sentimentResult.score;
             commentCount += 1;
         });
-
-        infoBoxes[4].updateBody(`Average Sentiment: ${Math.round(totalScore/commentCount * 100)}%`);
     }
 
     let displayResults = () => {

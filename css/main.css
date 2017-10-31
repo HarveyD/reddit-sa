@@ -94,23 +94,30 @@ button {
 .results-container .title {
     height: 15%;
     background-color: rgb(32, 165, 199);
-    bottom: 100%;
+    z-index: 1;
 }
 
 .results-container .information-container {
-    height: 35%;
+    height: 25%;
+    z-index: -1;
 }
 
 .results-container .sentiment {
     height: 35%;
+    background-color: rgb(219, 204, 67);
 }
 
 .results-container .footer {
     height: 10%;
 }
 
+.results-container .subreddit {
+    height: 10%;
+    background-color: rgb(31, 106, 150);
+}
+
 .information-container {
-    top: 15%;
+    top: 25%;
 }
     
 .information-container > div {
@@ -151,10 +158,6 @@ button {
 
 .created > .heading {
     background-color: rgb(142, 25, 189);
-}
-
-.results-container > .sentiment {
-    background-color: rgb(219, 204, 67);
 }
 
 .buttons-container {
