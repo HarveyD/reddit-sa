@@ -2,27 +2,27 @@
 $(document).ready(function() {
     const sentiment = require('sentiment');
 
-    let infoBoxes = [
-        new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
-        new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75,  ''),
-        new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
-        new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
-        new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
-        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, ''),
-        new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
-        new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
-    ]
-
+    const randomUrl = 'https://www.reddit.com/random/.json';
+    
     let totalScore = 0;
     let commentCount = 0;
-
-    let randomUrl = 'https://www.reddit.com/random/.json';
 
     let highestScore = Number.MIN_SAFE_INTEGER;
     let mostPositive = '';
 
     let lowestScore = Number.MAX_SAFE_INTEGER;
     let mostNegative = '';
+
+    let infoBoxes = [
+        new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
+        new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75,  ''),
+        new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
+        new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
+        new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
+        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, 'Sentiment'),
+        new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
+        new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
+    ];
 
     let getData = (url = randomUrl) => {
         $('#search').html(`<i class="fa fa-refresh"></i>`);
@@ -131,6 +131,15 @@ $(document).ready(function() {
 
     $('.feeling-lucky').click(() => {
         getData();
+
+        // Circle overlap animation
+        $('#reload').css("width", `${$(window).height() * 2.75}px`);
+        $('#reload').css("height", `${$(window).height() * 2.75}px`);
+
+        setTimeout(() => { // ToDo: listen to get and only shrink when done
+            $('#reload').css("width", '0px');
+            $('#reload').css("height", '0px');
+        }, 2000);
     });
 });
 
@@ -187,7 +196,10 @@ class RectangleBox extends InfoBox {
     generateHtmlAndCss() {
         $(`.${this.parentSelector}`).append(`
             <div class="${this.selector}" style="${this.animateFrom}: 100%">
-                <span class="body"></span>
+                <div class="heading">
+                    ${this.title}
+                </div>
+                <div class="body"></div>
             </div>
         `);
     }
@@ -203,8 +215,9 @@ class ButtonBox extends InfoBox {
 
     generateHtmlAndCss() {
         $(`.${this.parentSelector}`).append(`
+            <span id="reload"></span>
             <button class="${this.selector}" style="${this.animateFrom}: 100%">
-                ${this.title}
+                ${this.title || ''}
             </button>
         `);
     }

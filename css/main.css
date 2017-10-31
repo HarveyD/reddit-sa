@@ -107,6 +107,10 @@ button {
     background-color: rgb(219, 204, 67);
 }
 
+.results-container > .sentiment > .heading {
+    background-color: rgb(182, 167, 35);
+}
+
 .results-container .footer {
     height: 10%;
 }
@@ -183,8 +187,18 @@ button {
 
 .buttons-container > .feeling-lucky {
     background-color: rgb(148, 223, 233);
+    z-index: 4;
 }
 
+#reload {
+    border-radius: 50%;
+    transition: 2s all ease-in-out;
+    height: 0px;
+    width: 0px;
+    z-index: 2;
+    background-color: rgb(148, 223, 233);
+    position: absolute;
+}
 
 /* Custom Animations */
 @keyframes rotating {
