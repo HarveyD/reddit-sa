@@ -5,6 +5,7 @@ $(document).ready(function() {
     
     let totalScore = 0;
     let commentCount = 0;
+    let percentScore = 0;
 
     let highestScore = Number.MIN_SAFE_INTEGER;
     let mostPositive = '';
@@ -40,8 +41,9 @@ $(document).ready(function() {
         
             populateInfoBoxes(postData);
             getComments(commentData);
-            infoBoxes[5].updateBody(`Average Sentiment: ${Math.round(totalScore/commentCount * 100)}%`);
-            
+            // infoBoxes[5].updateBody(`${Math.round(totalScore/commentCount * 100)}%`);
+            percentScore = Math.round(totalScore/commentCount * 100);
+
             displayResults();
         })
         .done(() => {
@@ -108,8 +110,35 @@ $(document).ready(function() {
             infoBox.animate();
         });
 
+        setTimeout(() => {
+            totalScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
+            animateSentimentResult();
+        }, 2500);
+
         console.log(mostPositive);
         console.log(mostNegative);
+    };
+
+    let animateSentimentResult = () => {
+        let currentPercent = 0;
+        let currentSpeed = 25;
+
+        let animate = () => {
+            setTimeout(() => {
+                totalScore <= 0 ? currentPercent -= 1 : currentPercent += 1;
+
+                const completion = currentPercent/totalScore;
+                currentSpeed = (completion) * 100;
+                
+                infoBoxes[5].updateBody(currentPercent + '%');
+    
+                if (totalScore !== currentPercent) {
+                    animate();
+                }
+            }, currentSpeed);
+        }
+
+        animate();
     };
 
     $('#search').click(() => {
@@ -126,6 +155,11 @@ $(document).ready(function() {
 
     $('#random').click(() => {
         getData();
+    });
+
+    $('.search-again').click(() => {
+        $('.results-container').css('bottom', '100%');
+        $('.main-container').show();
     });
 
     $('.feeling-lucky').click(() => {

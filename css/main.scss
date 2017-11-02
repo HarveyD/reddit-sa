@@ -79,8 +79,14 @@ button {
   }
 }
 
+// RESULTS CSS
+
 .results-container {
+  bottom: 0%;
   display: none;
+  position: absolute;
+  transition: bottom 2s ease-in-out;
+  z-index: 2;
 
   div {
     align-items: center;
@@ -114,6 +120,22 @@ button {
     height: 25%;
   }
 
+  .positive {
+    background-color: rgb(32, 185, 32)!important;
+
+    .heading {
+      background-color: rgb(16, 114, 16)!important;
+    }
+  }
+
+  .negative {
+    background-color: rgb(192, 74, 74)!important;
+
+    .heading {
+      background-color: rgb(126, 22, 22)!important;
+    }
+  }
+
   .sentiment {
     background-color: rgb(219, 204, 67);
     height: 35%;
@@ -126,6 +148,7 @@ button {
 
     .body {
       height: 75%;
+      font-size: 128px;
     }
   }
 }
@@ -195,8 +218,15 @@ button {
 
   .feeling-lucky {
     background-color: rgb(148, 223, 233);
-    z-index: 4;
   }
+}
+
+.positive-comments {
+  background-color: lightgreen;
+  height: 100%;
+  left: 100%;
+  position: absolute;
+  width: 100%;
 }
 
 #reload {
@@ -204,9 +234,19 @@ button {
   border-radius: 50%;
   height: 0;
   position: absolute;
-  transition: 2s all ease-in-out;
+  transition: 1s all ease-in-out;
   width: 0;
   z-index: 2;
+}
+
+@media screen and (max-width: 720px) {
+  .results-container {
+    .title {
+      .body {
+        font-size: 18px;
+      }
+    }
+  }
 }
 
 // Custom Animations

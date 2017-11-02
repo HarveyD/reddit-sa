@@ -63,7 +63,11 @@ button {
     width: 164px; }
 
 .results-container {
-  display: none; }
+  bottom: 0%;
+  display: none;
+  position: absolute;
+  transition: bottom 2s ease-in-out;
+  z-index: 2; }
   .results-container div {
     align-items: center;
     color: #fff;
@@ -86,6 +90,14 @@ button {
     z-index: -1; }
   .results-container .information-container {
     height: 25%; }
+  .results-container .positive {
+    background-color: #20b920 !important; }
+    .results-container .positive .heading {
+      background-color: #107210 !important; }
+  .results-container .negative {
+    background-color: #c04a4a !important; }
+    .results-container .negative .heading {
+      background-color: #7e1616 !important; }
   .results-container .sentiment {
     background-color: #dbcc43;
     height: 35%; }
@@ -94,7 +106,8 @@ button {
       height: 25%;
       width: 100%; }
     .results-container .sentiment .body {
-      height: 75%; }
+      height: 75%;
+      font-size: 128px; }
 
 .information-container {
   top: 25%; }
@@ -136,18 +149,27 @@ button {
   .buttons-container .search-again {
     background-color: #65c2ce; }
   .buttons-container .feeling-lucky {
-    background-color: #94dfe9;
-    z-index: 4; }
+    background-color: #94dfe9; }
+
+.positive-comments {
+  background-color: lightgreen;
+  height: 100%;
+  left: 100%;
+  position: absolute;
+  width: 100%; }
 
 #reload {
   background-color: #94dfe9;
   border-radius: 50%;
   height: 0;
   position: absolute;
-  transition: 2s all ease-in-out;
+  transition: 1s all ease-in-out;
   width: 0;
   z-index: 2; }
 
+@media screen and (max-width: 720px) {
+  .results-container .title .body {
+    font-size: 18px; } }
 @keyframes rotating {
   from {
     transform: rotate(0deg); }

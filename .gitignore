@@ -1,2 +1,4 @@
 node_modules/*
-css/.sass-cache/
+css/.sass-cache/*
+.sass-cache/*
+dist/main.css.map
