@@ -7,7 +7,6 @@ $(document).ready(function() {
     
     let threadComments = [];
     
-    let totalScore = 0;
     let percentScore = 0;
     let inProgress = false;
 
@@ -33,39 +32,40 @@ $(document).ready(function() {
             $('#random').html(`<i class="fa fa-refresh"></i>`) :
             $('#search').html(`<i class="fa fa-refresh"></i>`);
         
-        $.getJSON(url, (threadData) => {
-            if (threadData.error && threadData.error === 404) {
-                return; 
-            }
-
-            const postData = threadData[0].data.children[0].data;
-            const commentData = threadData[1].data;
-
-            if (hasNoComments(postData)) {
+        (httpGet = () => {
+            $.getJSON(url, (threadData) => {
+                if (threadData.error && threadData.error === 404) {
+                    return; 
+                }
+    
+                const postData = threadData[0].data.children[0].data;
+                const commentData = threadData[1].data;
+    
+                if (hasNoComments(postData)) {
+                    return httpGet();
+                }
+    
+                $('#search').html('Analyse');
+                $('#random').html('Random');
+            
+                populateInfoBoxes(postData);
+                getComments(commentData);
+                analyseCommentData();
+                sortComments();
+                displayResults(isRandomReload);
+    
+                if (isRandomReload) {
+                    finishedReloadingRandom();
+                }
+            })
+            .error (() => {
+                $('#search').html('Analyse');
+                $('#random').html('Random');
+            })
+            .done (() => {
                 inProgress = false;
-                return getData(url, isRandomReload);
-            }
-
-            $('#search').html('Analyse');
-            $('#random').html('Random');
-        
-            populateInfoBoxes(postData);
-            getComments(commentData);
-            analyseCommentData();
-            sortComments();
-            displayResults(isRandomReload);
-
-            if (isRandomReload) {
-                finishedReloadingRandom();
-            }
-        })
-        .error (() => {
-            $('#search').html('Analyse');
-            $('#random').html('Random');
-        })
-        .done (() => {
-            inProgress = false;
-        });
+            });
+        })();
     };
 
     let hasNoComments = (postData) => {
@@ -112,13 +112,13 @@ $(document).ready(function() {
     };
 
     analyseCommentData = () => {
-        totalScore = threadComments.reduce((acc, val) => {
+        const totalScore = threadComments.reduce((acc, val) => {
             return acc + val.sentiment;
         }, 0);
 
         const commentCount = threadComments.length;
 
-        percentScore = Math.round(totalScore/commentCount * 100);
+        percentScore = Math.round(totalScore / commentCount * 100);
     }
 
     let displayResults = (isRandomReload) => {
@@ -133,8 +133,8 @@ $(document).ready(function() {
         const animationDelay = isRandomReload ? 750 : 2500;
 
         setTimeout(() => {
-            totalScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
-            animateSentimentResult(totalScore > 0);
+            percentScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
+            animateSentimentResult(percentScore > 0);
         }, animationDelay);
     };
 
@@ -244,7 +244,6 @@ $(document).ready(function() {
     let resetState = () => {
         $('.sentiment').removeClass('positive').removeClass('negative');
         totalScore = 0;
-        commentCount = 0;
         percentScore = 0;
     }
 
