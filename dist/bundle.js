@@ -5,16 +5,11 @@ $(document).ready(function() {
     const randomUrl = 'https://www.reddit.com/random/.json';
     const redditCodeUrl = 'https://www.reddit.com/'
     
+    let threadComments = [];
+    
     let totalScore = 0;
-    let commentCount = 0;
     let percentScore = 0;
     let inProgress = false;
-
-    let highestScore = Number.MIN_SAFE_INTEGER;
-    let mostPositive = '';
-
-    let lowestScore = Number.MAX_SAFE_INTEGER;
-    let mostNegative = '';
 
     let infoBoxes = {
         'title': new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
@@ -27,7 +22,7 @@ $(document).ready(function() {
         'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
     };
 
-    let getData = (url = randomUrl, isReload = false) => {
+    let getData = (url = randomUrl, isRandomReload = false) => {
         if (inProgress) {
             return;
         }
@@ -46,8 +41,9 @@ $(document).ready(function() {
             const postData = threadData[0].data.children[0].data;
             const commentData = threadData[1].data;
 
-            if (!hasComments(postData)) {
-                return getData(url, isReload);
+            if (hasNoComments(postData)) {
+                inProgress = false;
+                return getData(url, isRandomReload);
             }
 
             $('#search').html('Analyse');
@@ -55,11 +51,13 @@ $(document).ready(function() {
         
             populateInfoBoxes(postData);
             getComments(commentData);
-            percentScore = Math.round(totalScore/commentCount * 100);
-            console.log(commentCount);
+            analyseCommentData();
+            sortComments();
+            displayResults(isRandomReload);
 
-            displayResults(isReload);
-            finishedReloadingRandom();
+            if (isRandomReload) {
+                finishedReloadingRandom();
+            }
         })
         .error (() => {
             $('#search').html('Analyse');
@@ -70,12 +68,8 @@ $(document).ready(function() {
         });
     };
 
-    let hasComments = (postData) => {
-        if (postData.num_comments > 0) {
-            return true;
-        }
-
-        return false;
+    let hasNoComments = (postData) => {
+        return postData.num_comments <= 0 ? true : false;
     }
 
     let populateInfoBoxes = (postData) => {
@@ -85,7 +79,7 @@ $(document).ready(function() {
         infoBoxes['subreddit'].updateBody(postData.subreddit_name_prefixed);
         infoBoxes['comment-count'].updateBody(postData.num_comments);
         infoBoxes['upvotes'].updateBody(postData.ups);
-        infoBoxes['created'].updateBody(new Date(parseFloat(postData.created_utc)*1000).toDateString());
+        infoBoxes['created'].updateBody(new Date(parseFloat(postData.created_utc) * 1000).toDateString());
     }
 
     let getComments = (comments) => {
@@ -94,7 +88,7 @@ $(document).ready(function() {
                 return;
             }
 
-            const commentData = comment.data.body;
+            let commentData = comment.data.body;
 
             if (!commentData) {
                 return;
@@ -104,24 +98,30 @@ $(document).ready(function() {
                 getComments(comment.data.replies.data);
             }
 
-            const sentimentResult = sentiment(commentData);
+            const sentimentResult = sentiment(commentData).score;
 
-            if (sentimentResult.score > highestScore) {
-                highestScore = sentimentResult.score;
-                mostPositive = commentData;
-            }
-
-            if (sentimentResult.score < lowestScore) {
-                lowestScore = sentimentResult.score;
-                mostNegative = commentData;
-            }
-
-            totalScore += sentimentResult.score;
-            commentCount += 1;
+            comment.sentiment = sentimentResult;
+            threadComments.push(comment);
         });
     }
 
-    let displayResults = (isReload) => {
+    let sortComments = () => {
+        threadComments.sort((a, b) => {
+            return a.sentiment - b.sentiment;
+        })
+    };
+
+    analyseCommentData = () => {
+        totalScore = threadComments.reduce((acc, val) => {
+            return acc + val.sentiment;
+        }, 0);
+
+        const commentCount = threadComments.length;
+
+        percentScore = Math.round(totalScore/commentCount * 100);
+    }
+
+    let displayResults = (isRandomReload) => {
         $('.main-container').hide();
         $('.results-container').show();
         infoBoxes['sentiment'].updateBody('0%');
@@ -130,31 +130,28 @@ $(document).ready(function() {
             infoBoxes[box].animate();
         });
 
-        const animationDelay = isReload ? 750 : 2500;
+        const animationDelay = isRandomReload ? 750 : 2500;
 
         setTimeout(() => {
             totalScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
-            animateSentimentResult();
+            animateSentimentResult(totalScore > 0);
         }, animationDelay);
-
-        console.log(mostPositive);
-        console.log(mostNegative);
     };
 
-    let animateSentimentResult = () => {
+    let animateSentimentResult = (incrementUp) => {
         let currentPercent = 0;
         let currentSpeed = 25;
 
         let animate = () => {
             setTimeout(() => {
-                totalScore <= 0 ? currentPercent -= 1 : currentPercent += 1;
+                incrementUp <= 0 ? currentPercent -= 1 : currentPercent += 1;
 
-                const completion = currentPercent / totalScore;
+                const completion = currentPercent / percentScore;
                 currentSpeed = (completion) * 100;
                 
                 infoBoxes['sentiment'].updateBody(currentPercent + '%');
     
-                if (totalScore !== currentPercent && !inProgress) {
+                if (completion < 1 && !inProgress) {
                     animate();
                 }
             }, currentSpeed);
@@ -197,12 +194,12 @@ $(document).ready(function() {
 
     let parseInput = (input) => {
         const redditRegexCode = /^\w{6}$/;
-        const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\//;
+        const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\/r\/\w*\//;
 
         if (redditRegexCode.exec(input)) {
             return `${redditCodeUrl}${input}.json`;
         } else if(redditRegexUrl.exec(input)) {
-            return input;
+            return input+'.json';
         }
 
         return null;
