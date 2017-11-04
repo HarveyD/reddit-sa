@@ -6,6 +6,13 @@ body {
   overflow: hidden;
   padding: 0;
   width: 100vw;
+
+  background: linear-gradient(230deg, #c98de4, #96d7d7);
+  background-size: 400% 400%;
+  
+  -webkit-animation: GradientBG 13s ease infinite;
+  -moz-animation: GradientBG 13s ease infinite;
+  animation: GradientBG 13s ease infinite;
 }
 
 body {
@@ -25,22 +32,35 @@ body {
 
 .main-container  {
   > .heading {
+    font-size: 32px;
+    font-weight: bold;
     height: 25%;
+    color: white;
   }
 }
 
 .search-container {
+  align-items: center;
   display: flex;
   flex-direction: column;
   height: 50%;
   justify-content: center;
+
+  .input-description {
+    color: white;
+    text-align: center;
+    margin-bottom: 18px;
+    font-size: 18px;
+    width: 75%;
+  }
 }
 
 button {
   outline: none;
 }
 
-#search > i {
+#search > i,
+#random > i {
   -webkit-animation: rotating 2s linear infinite;
   animation: rotating 2s linear infinite;
 }
@@ -51,6 +71,19 @@ button {
   justify-content: center;
   width: 100%;
 
+  i {
+    position: absolute;
+    right: 20%;
+
+    &.valid {
+      color: green;
+    }
+
+    &.invalid {
+      color: red;
+    }
+  }
+
   input {
     align-items: center;
     border: 0;
@@ -58,7 +91,16 @@ button {
     font-size: 32px;
     height: 48px;
     outline: none;
-    width: 75%;
+    padding-right: 5%;
+    width: 60%;
+
+    &.valid {
+      border: 1px solid green;
+    }
+
+    &.invalid {
+      border: 1px solid red;
+    }
   }
 }
 
@@ -69,18 +111,26 @@ button {
   width: 100%;
 
   button {
-    background-color: #add8e6;
+    background-color: #3497b3;
     border: 0;
     border-radius: 4px;
     color: #fff;
     font-size: 24px;
     height: 64px;
     width: 164px;
+    transition: background-color .25s ease-in-out;
+
+    &:hover {
+      background-color: #44c4e7;
+    }
+  }
+
+  #search {
+    margin-right: 24px;
   }
 }
 
 // RESULTS CSS
-
 .results-container {
   bottom: 0%;
   display: none;
@@ -233,6 +283,23 @@ button {
 }
 
 @media screen and (max-width: 720px) {
+  .main-container  {
+    > .heading {
+      font-size: 18px;
+    }
+
+    .input-container {
+      i {
+        right: 10%;
+      }
+
+      input {
+        width: 80%;
+        padding-right: 10%;
+      }
+    }
+  }
+
   .results-container {
     .title {
       .body {
@@ -254,29 +321,18 @@ button {
 }
 
 // // Gradient Animation
-// .gradient-background {
-//   background: linear-gradient(230deg, #8cca86, #e19291);
-//   background-size: 400% 400%;
-  
-//   -webkit-animation: AnimationName 30s ease infinite;
-//   -moz-animation: AnimationName 30s ease infinite;
-//   animation: AnimationName 30s ease infinite;
-  
-//   @-webkit-keyframes AnimationName {
-//       0%{background-position:50% 0%}
-//       50%{background-position:51% 100%}
-//       100%{background-position:50% 0%}
-//   }
-
-//   @-moz-keyframes AnimationName {
-//       0%{background-position:50% 0%}
-//       50%{background-position:51% 100%}
-//       100%{background-position:50% 0%}
-//   }
-  
-//   @keyframes AnimationName { 
-//       0%{background-position:50% 0%}
-//       50%{background-position:51% 100%}
-//       100%{background-position:50% 0%}
-//   }
-// }
+@-webkit-keyframes GradientBG {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@-moz-keyframes GradientBG {
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}
+@keyframes GradientBG { 
+  0%{background-position:50% 0%}
+  50%{background-position:51% 100%}
+  100%{background-position:50% 0%}
+}

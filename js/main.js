@@ -2,10 +2,12 @@ $(document).ready(function() {
     const sentiment = require('sentiment');
 
     const randomUrl = 'https://www.reddit.com/random/.json';
+    const redditCodeUrl = 'https://www.reddit.com/'
     
     let totalScore = 0;
     let commentCount = 0;
     let percentScore = 0;
+    let inProgress = false;
 
     let highestScore = Number.MIN_SAFE_INTEGER;
     let mostPositive = '';
@@ -25,8 +27,16 @@ $(document).ready(function() {
     };
 
     let getData = (url = randomUrl, isReload = false) => {
-        $('#search').html(`<i class="fa fa-refresh"></i>`);
+        if (inProgress) {
+            return;
+        }
 
+        inProgress = true;
+        
+        url === randomUrl ?
+            $('#random').html(`<i class="fa fa-refresh"></i>`) :
+            $('#search').html(`<i class="fa fa-refresh"></i>`);
+        
         $.getJSON(url, (threadData) => {
             if (threadData.error && threadData.error === 404) {
                 return; 
@@ -40,13 +50,22 @@ $(document).ready(function() {
             }
 
             $('#search').html('Analyse');
+            $('#random').html('Random');
         
             populateInfoBoxes(postData);
             getComments(commentData);
             percentScore = Math.round(totalScore/commentCount * 100);
+            console.log(commentCount);
 
             displayResults(isReload);
             finishedReloadingRandom();
+        })
+        .error (() => {
+            $('#search').html('Analyse');
+            $('#random').html('Random');
+        })
+        .done (() => {
+            inProgress = false;
         });
     };
 
@@ -104,13 +123,13 @@ $(document).ready(function() {
     let displayResults = (isReload) => {
         $('.main-container').hide();
         $('.results-container').show();
+        infoBoxes['sentiment'].updateBody('0%');
 
         Object.keys(infoBoxes).forEach(box => {
             infoBoxes[box].animate();
         });
 
-        let animationDelay = isReload ? 750 : 2500;
-        console.log(animationDelay);
+        const animationDelay = isReload ? 750 : 2500;
 
         setTimeout(() => {
             totalScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
@@ -134,7 +153,7 @@ $(document).ready(function() {
                 
                 infoBoxes['sentiment'].updateBody(currentPercent + '%');
     
-                if (totalScore !== currentPercent) {
+                if (totalScore !== currentPercent && !inProgress) {
                     animate();
                 }
             }, currentSpeed);
@@ -143,6 +162,22 @@ $(document).ready(function() {
         animate();
     };
 
+    $('#search-input').on('input', () => {
+        let url = $('#search-input').val();
+
+        const res = parseInput(url);
+
+        if (res) {
+            $('#input-icon').removeClass('invalid').removeClass('fa-times')
+                .addClass('valid').addClass('fa-check');
+            $('#search-input').removeClass('invalid').addClass('valid');
+        } else {
+            $('#input-icon').removeClass('valid').removeClass('fa-check')
+                .addClass('invalid').addClass('fa-times');;
+            $('#search-input').removeClass('valid').addClass('invalid');
+        }
+    });
+
     $('#search').click(() => {
         let url = $('#search-input').val();
         
@@ -150,10 +185,27 @@ $(document).ready(function() {
             return;
         }
 
-        url += '.json';
+        const jsonUrl = parseInput(url);
 
-        getData(url);
+        if (!jsonUrl) {
+            return;
+        }
+
+        getData(jsonUrl);
     });
+
+    let parseInput = (input) => {
+        const redditRegexCode = /^\w{6}$/;
+        const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\//;
+
+        if (redditRegexCode.exec(input)) {
+            return `${redditCodeUrl}${input}.json`;
+        } else if(redditRegexUrl.exec(input)) {
+            return input;
+        }
+
+        return null;
+    };
 
     $('#random').click(() => {
         getData();
@@ -196,7 +248,6 @@ $(document).ready(function() {
         totalScore = 0;
         commentCount = 0;
         percentScore = 0;
-        infoBoxes['sentiment'].updateBody('0%');
     }
 
     let finishedReloadingRandom = () => {
