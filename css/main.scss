@@ -218,15 +218,8 @@ button {
 
   .feeling-lucky {
     background-color: rgb(148, 223, 233);
+    z-index: 2;
   }
-}
-
-.positive-comments {
-  background-color: lightgreen;
-  height: 100%;
-  left: 100%;
-  position: absolute;
-  width: 100%;
 }
 
 #reload {
@@ -234,7 +227,7 @@ button {
   border-radius: 50%;
   height: 0;
   position: absolute;
-  transition: 1s all ease-in-out;
+  transition: .75s all ease-in-out;
   width: 0;
   z-index: 2;
 }
@@ -259,3 +252,31 @@ button {
     transform: rotate(360deg);
   }
 }
+
+// // Gradient Animation
+// .gradient-background {
+//   background: linear-gradient(230deg, #8cca86, #e19291);
+//   background-size: 400% 400%;
+  
+//   -webkit-animation: AnimationName 30s ease infinite;
+//   -moz-animation: AnimationName 30s ease infinite;
+//   animation: AnimationName 30s ease infinite;
+  
+//   @-webkit-keyframes AnimationName {
+//       0%{background-position:50% 0%}
+//       50%{background-position:51% 100%}
+//       100%{background-position:50% 0%}
+//   }
+
+//   @-moz-keyframes AnimationName {
+//       0%{background-position:50% 0%}
+//       50%{background-position:51% 100%}
+//       100%{background-position:50% 0%}
+//   }
+  
+//   @keyframes AnimationName { 
+//       0%{background-position:50% 0%}
+//       50%{background-position:51% 100%}
+//       100%{background-position:50% 0%}
+//   }
+// }

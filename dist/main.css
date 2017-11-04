@@ -149,21 +149,15 @@ button {
   .buttons-container .search-again {
     background-color: #65c2ce; }
   .buttons-container .feeling-lucky {
-    background-color: #94dfe9; }
-
-.positive-comments {
-  background-color: lightgreen;
-  height: 100%;
-  left: 100%;
-  position: absolute;
-  width: 100%; }
+    background-color: #94dfe9;
+    z-index: 2; }
 
 #reload {
   background-color: #94dfe9;
   border-radius: 50%;
   height: 0;
   position: absolute;
-  transition: 1s all ease-in-out;
+  transition: .75s all ease-in-out;
   width: 0;
   z-index: 2; }
 

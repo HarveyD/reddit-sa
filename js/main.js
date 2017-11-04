@@ -13,18 +13,18 @@ $(document).ready(function() {
     let lowestScore = Number.MAX_SAFE_INTEGER;
     let mostNegative = '';
 
-    let infoBoxes = [
-        new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
-        new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75,  ''),
-        new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
-        new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
-        new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
-        new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, 'Sentiment'),
-        new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
-        new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
-    ];
+    let infoBoxes = {
+        'title': new RectangleBox('title', 'results-container', 1, 'bottom', 85,  ''),
+        'subreddit': new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75,  ''),
+        'comment-count': new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
+        'upvotes': new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
+        'created': new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
+        'sentiment': new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, 'Sentiment'),
+        'search-again': new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
+        'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
+    };
 
-    let getData = (url = randomUrl) => {
+    let getData = (url = randomUrl, isReload = false) => {
         $('#search').html(`<i class="fa fa-refresh"></i>`);
 
         $.getJSON(url, (threadData) => {
@@ -36,18 +36,17 @@ $(document).ready(function() {
             const commentData = threadData[1].data;
 
             if (!hasComments(postData)) {
-                return getData();
+                return getData(url, isReload);
             }
+
+            $('#search').html('Analyse');
         
             populateInfoBoxes(postData);
             getComments(commentData);
-            // infoBoxes[5].updateBody(`${Math.round(totalScore/commentCount * 100)}%`);
             percentScore = Math.round(totalScore/commentCount * 100);
 
-            displayResults();
-        })
-        .done(() => {
-            $('#search').html('Analyse');
+            displayResults(isReload);
+            finishedReloadingRandom();
         });
     };
 
@@ -62,11 +61,11 @@ $(document).ready(function() {
     let populateInfoBoxes = (postData) => {
         title = postData.title;
 
-        infoBoxes[0].updateBody(postData.title);
-        infoBoxes[1].updateBody(postData.subreddit_name_prefixed);
-        infoBoxes[2].updateBody(postData.num_comments);
-        infoBoxes[3].updateBody(postData.ups);
-        infoBoxes[4].updateBody(new Date(postData.created_utc).toDateString());
+        infoBoxes['title'].updateBody(postData.title);
+        infoBoxes['subreddit'].updateBody(postData.subreddit_name_prefixed);
+        infoBoxes['comment-count'].updateBody(postData.num_comments);
+        infoBoxes['upvotes'].updateBody(postData.ups);
+        infoBoxes['created'].updateBody(new Date(parseFloat(postData.created_utc)*1000).toDateString());
     }
 
     let getComments = (comments) => {
@@ -102,18 +101,21 @@ $(document).ready(function() {
         });
     }
 
-    let displayResults = () => {
+    let displayResults = (isReload) => {
         $('.main-container').hide();
         $('.results-container').show();
 
-        infoBoxes.forEach(infoBox => {
-            infoBox.animate();
+        Object.keys(infoBoxes).forEach(box => {
+            infoBoxes[box].animate();
         });
+
+        let animationDelay = isReload ? 750 : 2500;
+        console.log(animationDelay);
 
         setTimeout(() => {
             totalScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
             animateSentimentResult();
-        }, 2500);
+        }, animationDelay);
 
         console.log(mostPositive);
         console.log(mostNegative);
@@ -127,10 +129,10 @@ $(document).ready(function() {
             setTimeout(() => {
                 totalScore <= 0 ? currentPercent -= 1 : currentPercent += 1;
 
-                const completion = currentPercent/totalScore;
+                const completion = currentPercent / totalScore;
                 currentSpeed = (completion) * 100;
                 
-                infoBoxes[5].updateBody(currentPercent + '%');
+                infoBoxes['sentiment'].updateBody(currentPercent + '%');
     
                 if (totalScore !== currentPercent) {
                     animate();
@@ -160,20 +162,47 @@ $(document).ready(function() {
     $('.search-again').click(() => {
         $('.results-container').css('bottom', '100%');
         $('.main-container').show();
+
+        setTimeout(() => {
+            resetToMenu();
+        }, 2000);
     });
 
-    $('.feeling-lucky').click(() => {
-        getData();
+    let resetToMenu = () => {
+        resetState();
 
+        $('.results-container').hide().css('bottom', '0%');
+
+        Object.keys(infoBoxes).forEach(box => {
+            infoBoxes[box].resetPos();
+        });
+    }
+
+    $('.feeling-lucky').click(() => {
+        getData(randomUrl, true);
+        animateReloadRandom();
+    });
+
+    let animateReloadRandom = () => {
+        resetState();
+        
         // Circle overlap animation
         $('#reload').css("width", `${$(window).height() * 2.75}px`);
         $('#reload').css("height", `${$(window).height() * 2.75}px`);
+    };
 
-        setTimeout(() => { // ToDo: listen to get and only shrink when done
-            $('#reload').css("width", '0px');
-            $('#reload').css("height", '0px');
-        }, 2000);
-    });
+    let resetState = () => {
+        $('.sentiment').removeClass('positive').removeClass('negative');
+        totalScore = 0;
+        commentCount = 0;
+        percentScore = 0;
+        infoBoxes['sentiment'].updateBody('0%');
+    }
+
+    let finishedReloadingRandom = () => {
+        $('#reload').css("width", '0px');
+        $('#reload').css("height", '0px');
+    }
 });
 
 class InfoBox {
@@ -192,8 +221,11 @@ class InfoBox {
     animate() {
         setTimeout(() => {
             $(`.${this.selector}`).css(this.animateFrom, `${this.animatePos}%`)
-            
         }, this.animationDelay);
+    }
+
+    resetPos() {
+        $(`.${this.selector}`).css(this.animateFrom, `100%`)
     }
 }
 
