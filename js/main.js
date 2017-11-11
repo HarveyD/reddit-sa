@@ -6,7 +6,8 @@ $(document).ready(function() {
     
     let threadComments = [];
     
-    let percentScore = 0;
+    let positiveScore = 0;
+    let negativeScore = 0;
     let inProgress = false;
 
     let infoBoxes = {
@@ -15,7 +16,8 @@ $(document).ready(function() {
       'comment-count': new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
       'upvotes': new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
       'created': new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
-      'sentiment': new RectangleBox('sentiment', 'results-container', 2000, 'top', 50, 'Sentiment'),
+      'positive-sentiment': new RectangleBox('positive-sentiment', 'results-container', 2000, 'top', 50, 'Positive Sentiment'),
+      'negative-sentiment': new RectangleBox('negative-sentiment', 'results-container', 2250, 'top', 70, 'Negative Sentiment'),
       'search-again': new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
       'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
     };
@@ -99,9 +101,10 @@ $(document).ready(function() {
           getComments(comment.data.replies.data);
         }
 
-        const sentimentResult = sentiment(commentData).score;
+        const sentimentResult = sentiment(commentData);
 
-        comment.sentiment = sentimentResult;
+        comment.sentimentComparative = sentimentResult.comparative;
+        comment.sentimentScore = sentimentResult.score;
         threadComments.push(comment);
       });
     }
@@ -113,19 +116,31 @@ $(document).ready(function() {
     };
 
     let analyseCommentData = () => {
-      const totalScore = threadComments.reduce((acc, val) => {
-        return acc + val.sentiment;
-      }, 0);
+      let positiveCount = 0;
+      let negativeCount = 0;
+
+      threadComments.forEach(comment => {
+        if (comment.sentimentComparative > 0 ) {
+          positiveCount += 1;
+        } else if (comment.sentimentComparative < 0) {
+          negativeCount += 1;
+        }
+      });
+      // let totalScore = threadComments.reduce((acc, val) => {
+      //   return acc + ((val.sentimentComparative / 5) * 100);
+      // }, 0);
 
       const commentCount = threadComments.length;
 
-      percentScore = Math.round(totalScore / commentCount * 100);
+      positiveScore = Math.round((positiveCount / commentCount) * 100);
+      negativeScore = Math.round((negativeCount / commentCount) * 100);
     }
 
     let displayResults = (isRandomReload) => {
       $('.main-container').hide();
       $('.results-container').show();
-      infoBoxes['sentiment'].updateBody('0%');
+      infoBoxes['positive-sentiment'].updateBody('0%');
+      infoBoxes['negative-sentiment'].updateBody('0%');
 
       Object.keys(infoBoxes).forEach(box => {
         infoBoxes[box].animate();
@@ -134,8 +149,10 @@ $(document).ready(function() {
       const animationDelay = isRandomReload ? 750 : 2500;
 
       setTimeout(() => {
-        percentScore > 0 ? $('.sentiment').addClass('positive') : $('.sentiment').addClass('negative');
-        animateSentimentResult(percentScore > 0);
+        animateSentimentResult([
+          { score: positiveScore, selector: 'positive-sentiment', colorClass: 'positive' },
+          { score: negativeScore, selector: 'negative-sentiment' , colorClass: 'negative'}
+        ]);
       }, animationDelay);
     };
 
@@ -148,7 +165,7 @@ $(document).ready(function() {
         searchDetails: postInfo,
         negativeComments: threadComments.slice(0, 25),
         positiveComments: threadComments.slice(-25),
-        sentimentScore: percentScore,
+        sentimentScore: positiveScore,
         searchQuery: {
           wasRandom: url === randomUrl ? true : false,
           wasSuggested: false,
@@ -161,21 +178,29 @@ $(document).ready(function() {
       // });
     }
 
-    let animateSentimentResult = (incrementUp) => {
+    let animateSentimentResult = (animationList, currentAnimationIndex = 0) => {
+      const animationObj = animationList[currentAnimationIndex];
+      const percentage = animationObj.score;
+      const selector = animationObj.selector;
+
       let currentPercent = 0;
       let currentSpeed = 25;
 
+      $(`.${selector}`).addClass(animationObj.colorClass);
+
       (animate = () => {
         setTimeout(() => {
-          incrementUp <= 0 ? currentPercent -= 1 : currentPercent += 1;
+          currentPercent += 1;
 
-          const completion = currentPercent / percentScore;
+          const completion = currentPercent / percentage;
           currentSpeed = (completion) * 100;
           
-          infoBoxes['sentiment'].updateBody(currentPercent + '%');
+          infoBoxes[selector].updateBody(currentPercent + '%');
 
           if (completion < 1 && !inProgress) {
             animate();
+          } else if (currentAnimationIndex < animationList.length - 1 ) {
+            animateSentimentResult(animationList, ++currentAnimationIndex);
           }
         }, currentSpeed);
       })();
@@ -279,11 +304,11 @@ $(document).ready(function() {
     let resetState = () => {
       threadComments = [];
       totalScore = 0;
-      percentScore = 0;
+      positiveScore = 0;
+      negativeScore = 0;
 
-      $('.sentiment')
-        .removeClass('positive')
-        .removeClass('negative');
+      $('.positive-sentiment').removeClass('positive')
+      $('.negative-sentiment').removeClass('negative');
     }
 
     let finishedReloadingRandom = () => {

@@ -32,10 +32,10 @@ body {
 
 .main-container  {
   > .heading {
+    color: white;
     font-size: 32px;
     font-weight: bold;
     height: 25%;
-    color: white;
   }
 }
 
@@ -186,9 +186,10 @@ button {
     }
   }
 
-  .sentiment {
+  .positive-sentiment,
+  .negative-sentiment {
     background-color: rgb(219, 204, 67);
-    height: 35%;
+    height: 20%;
 
     .heading {
       background-color: rgb(182, 167, 35);
@@ -197,8 +198,8 @@ button {
     }
 
     .body {
+      font-size: 96px;
       height: 75%;
-      font-size: 128px;
     }
   }
 }
@@ -228,6 +229,10 @@ button {
     .heading {
       background-color: rgb(29, 76, 156);
     }
+
+    .body {
+      font-size: 72px;
+    }
   }
 
   .upvotes {
@@ -235,6 +240,10 @@ button {
 
     .heading {
       background-color: rgb(212, 134, 32);
+    }
+
+    .body {
+      font-size: 72px;
     }
   }
 
@@ -244,12 +253,16 @@ button {
     .heading {
       background-color: rgb(142, 25, 189);
     }
+
+    .body {
+      font-size: 48px;
+    }
   }
 }
 
 .buttons-container {
-  height: 15%;
-  top: 85%;
+  height: 10%;
+  top: 90%;
 
   > button {
     border: 0;
@@ -294,8 +307,23 @@ button {
       }
 
       input {
-        width: 80%;
         padding-right: 10%;
+        width: 80%;
+      }
+    }
+  }
+
+  .information-container {
+    .upvotes,
+    .comment-count {
+      .body {
+        font-size: 36px;
+      }
+    }
+
+    .created {
+      .body {
+        font-size: 30px;
       }
     }
   }
@@ -304,6 +332,13 @@ button {
     .title {
       .body {
         font-size: 18px;
+      }
+    }
+
+    .positive-sentiment,
+    .negative-sentiment {
+      .body {
+        font-size: 72px;
       }
     }
   }

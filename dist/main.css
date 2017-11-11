@@ -24,10 +24,10 @@ body > div {
   width: 100%; }
 
 .main-container > .heading {
+  color: white;
   font-size: 32px;
   font-weight: bold;
-  height: 25%;
-  color: white; }
+  height: 25%; }
 
 .search-container {
   align-items: center;
@@ -131,16 +131,19 @@ button {
     background-color: #c04a4a !important; }
     .results-container .negative .heading {
       background-color: #7e1616 !important; }
-  .results-container .sentiment {
+  .results-container .positive-sentiment,
+  .results-container .negative-sentiment {
     background-color: #dbcc43;
-    height: 35%; }
-    .results-container .sentiment .heading {
+    height: 20%; }
+    .results-container .positive-sentiment .heading,
+    .results-container .negative-sentiment .heading {
       background-color: #b6a723;
       height: 25%;
       width: 100%; }
-    .results-container .sentiment .body {
-      height: 75%;
-      font-size: 128px; }
+    .results-container .positive-sentiment .body,
+    .results-container .negative-sentiment .body {
+      font-size: 96px;
+      height: 75%; }
 
 .information-container {
   top: 25%; }
@@ -158,18 +161,24 @@ button {
     background-color: #437be2; }
     .information-container .comment-count .heading {
       background-color: #1d4c9c; }
+    .information-container .comment-count .body {
+      font-size: 72px; }
   .information-container .upvotes {
     background-color: #e9ac5b; }
     .information-container .upvotes .heading {
       background-color: #d48620; }
+    .information-container .upvotes .body {
+      font-size: 72px; }
   .information-container .created {
     background-color: #c564eb; }
     .information-container .created .heading {
       background-color: #8e19bd; }
+    .information-container .created .body {
+      font-size: 48px; }
 
 .buttons-container {
-  height: 15%;
-  top: 85%; }
+  height: 10%;
+  top: 90%; }
   .buttons-container > button {
     border: 0;
     color: #fff;
@@ -200,11 +209,20 @@ button {
   .main-container .input-container i {
     right: 10%; }
   .main-container .input-container input {
-    width: 80%;
-    padding-right: 10%; }
+    padding-right: 10%;
+    width: 80%; }
+
+  .information-container .upvotes .body,
+  .information-container .comment-count .body {
+    font-size: 36px; }
+  .information-container .created .body {
+    font-size: 30px; }
 
   .results-container .title .body {
-    font-size: 18px; } }
+    font-size: 18px; }
+  .results-container .positive-sentiment .body,
+  .results-container .negative-sentiment .body {
+    font-size: 72px; } }
 @keyframes rotating {
   from {
     transform: rotate(0deg); }
