@@ -111,7 +111,7 @@ $(document).ready(function() {
 
     let sortComments = () => {
       threadComments.sort((a, b) => {
-        return a.sentiment - b.sentiment;
+        return a.sentimentComparative - b.sentimentComparative;
       });
     };
 
@@ -163,9 +163,10 @@ $(document).ready(function() {
           userName: ''
         },
         searchDetails: postInfo,
-        negativeComments: threadComments.slice(0, 25),
-        positiveComments: threadComments.slice(-25),
-        sentimentScore: positiveScore,
+        negativeComments: threadComments.slice(0, 10),
+        positiveComments: threadComments.slice(-10).reverse(),
+        positivePercent: positiveScore,
+        negativePercent: negativeScore,
         searchQuery: {
           wasRandom: url === randomUrl ? true : false,
           wasSuggested: false,
@@ -173,9 +174,9 @@ $(document).ready(function() {
         }
       };
 
-      // $.post( "http://localhost:3000/api/reddit-sa", body, (res) => {
-      //   console.log(res);
-      // });
+      $.post( "http://localhost:3000/api/reddit-sa", body, (res) => {
+        console.log(res);
+      });
     }
 
     let animateSentimentResult = (animationList, currentAnimationIndex = 0) => {
