@@ -52,9 +52,9 @@ $(document).ready(function() {
           $('#random').html('Random');
       
           populateInfoBoxes(postData);
-          getComments(commentData);
+          getCommentsAndScore(commentData);
           analyseCommentData();
-          sortComments();
+          sortAndStripComments();
           displayResults(isRandomReload);
           postResults(postData, url);
 
@@ -69,23 +69,42 @@ $(document).ready(function() {
         .done (() => {
             inProgress = false;
         });
-
       })();
     };
 
     let hasNoComments = (postData) => {
-      return postData.num_comments <= 0 ? true : false;
+      return postData.num_comments <= 1 ? true : false;
     }
 
     let populateInfoBoxes = (postData) => {
       infoBoxes['title'].updateBody(postData.title);
+      setTitleSize(postData.title.length);
       infoBoxes['subreddit'].updateBody(postData.subreddit_name_prefixed);
       infoBoxes['comment-count'].updateBody(postData.num_comments);
       infoBoxes['upvotes'].updateBody(postData.ups);
       infoBoxes['created'].updateBody(new Date(parseFloat(postData.created_utc) * 1000).toDateString());
     }
 
-    let getComments = (comments) => {
+    let setTitleSize = (titleSize) => {
+      let fontSize = 28;
+      let fontClass = 'large';
+      if (titleSize > 120) {
+        fontClass = 'very-small';
+        fontSize = 18
+      } else if (titleSize > 90) {
+        fontClass = 'small';
+        fontSize = 20;
+      } else if (titleSize > 60) {
+        fontClass = 'medium';
+        fontSize = 24
+      }
+
+      $('.results-container .title .body')
+        .removeClass('large very-small small medium')
+        .addClass(fontClass);
+    }
+
+    let getCommentsAndScore = (comments) => {
       comments.children.forEach((comment) => {
         if (!comment) {
           return;
@@ -98,7 +117,7 @@ $(document).ready(function() {
         }
 
         if (comment.data.replies.data) {
-          getComments(comment.data.replies.data);
+          getCommentsAndScore(comment.data.replies.data);
         }
 
         const sentimentResult = sentiment(commentData);
@@ -108,12 +127,6 @@ $(document).ready(function() {
         threadComments.push(comment);
       });
     }
-
-    let sortComments = () => {
-      threadComments.sort((a, b) => {
-        return a.sentimentComparative - b.sentimentComparative;
-      });
-    };
 
     let analyseCommentData = () => {
       let positiveCount = 0;
@@ -126,15 +139,41 @@ $(document).ready(function() {
           negativeCount += 1;
         }
       });
-      // let totalScore = threadComments.reduce((acc, val) => {
-      //   return acc + ((val.sentimentComparative / 5) * 100);
-      // }, 0);
 
       const commentCount = threadComments.length;
 
       positiveScore = Math.round((positiveCount / commentCount) * 100);
       negativeScore = Math.round((negativeCount / commentCount) * 100);
     }
+
+    let sortAndStripComments = () => {
+      threadComments = threadComments.map((commentData) => {
+        const comment = commentData.data;
+        return {
+          author: comment.author,
+          body: comment.body,
+          body_html: comment.body_html,
+          created: comment.created,
+          created_utc: comment.created_utc,
+          id: comment.id,
+          link_id: comment.link_id,
+          name: comment.name,
+          parent_id: comment.parent_id,
+          permalink: comment.permalink,
+          score: comment.score,
+          subreddit: comment.subreddit,
+          subreddit_id: comment.subreddit_id,
+          subreddit_name_prefixed: comment.subreddit_name_prefixed,
+          ups: comment.ups,
+          sentimentComparative: commentData.sentimentComparative,
+          sentimentScore: commentData.sentimentScore
+        }
+      });
+
+      threadComments.sort((a, b) => {
+        return a.sentimentComparative - b.sentimentComparative;
+      });
+    };
 
     let displayResults = (isRandomReload) => {
       $('.main-container').hide();
@@ -163,8 +202,13 @@ $(document).ready(function() {
           userName: ''
         },
         searchDetails: postInfo,
-        negativeComments: threadComments.slice(0, 10),
-        positiveComments: threadComments.slice(-10).reverse(),
+        positiveComments: threadComments
+                            .slice(-10)
+                            .reverse()
+                            .filter(c => { return c.sentimentComparative > 0}),
+        negativeComments: threadComments
+                            .slice(0, 10)
+                            .filter(c => { return c.sentimentComparative < 0}),
         positivePercent: positiveScore,
         negativePercent: negativeScore,
         searchQuery: {
@@ -174,8 +218,7 @@ $(document).ready(function() {
         }
       };
 
-      $.post( "http://localhost:3000/api/reddit-sa", body, (res) => {
-        console.log(res);
+      $.post("/api/reddit-sa", body, (res) => {
       });
     }
 
@@ -214,20 +257,16 @@ $(document).ready(function() {
 
       if (res) {
         $('#input-icon')
-          .removeClass('invalid')
-          .removeClass('fa-times')
-          .addClass('valid')
-          .addClass('fa-check');
+          .removeClass('invalid fa-times')
+          .addClass('valid fa-check')
 
         $('#search-input')
           .removeClass('invalid')
           .addClass('valid');
       } else {
         $('#input-icon')
-          .removeClass('valid')
-          .removeClass('fa-check')
-          .addClass('invalid')
-          .addClass('fa-times');
+          .removeClass('valid fa-check')
+          .addClass('invalid fa-times')
 
         $('#search-input')
           .removeClass('valid')

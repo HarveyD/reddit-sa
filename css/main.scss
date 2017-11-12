@@ -146,7 +146,12 @@ button {
     font-size: 32px;
     justify-content: center;
     text-align: center;
-    transition: all 1.5s ease-in-out;
+    transition: 
+      left 1.5s ease-in-out, 
+      top 1.5s ease-in-out,
+      bottom 1.5s ease-in-out,
+      right 1.5s ease-in-out,
+      background-color 1.5s ease-in-out;
     width: 100%;
   }
 
@@ -158,6 +163,26 @@ button {
     background-color: rgb(32, 165, 199);
     height: 15%;
     z-index: 1;
+
+    .body {
+      overflow-y: auto;
+
+      &.large {
+        font-size: 42px;
+      }
+
+      &.medium {
+        font-size: 36px;
+      }
+
+      &.small {
+        font-size: 30px;
+      }
+      
+      &.very-small {
+        font-size: 24px;
+      }
+    }
   }
 
   .subreddit {
@@ -331,7 +356,21 @@ button {
   .results-container {
     .title {
       .body {
-        font-size: 18px;
+          &.large {
+            font-size: 28px;
+          }
+    
+          &.medium {
+            font-size: 24px;
+          }
+    
+          &.small {
+            font-size: 20px;
+          }
+          
+          &.very-small {
+            font-size: 18px;
+          }
       }
     }
 

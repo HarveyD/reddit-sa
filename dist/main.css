@@ -109,7 +109,7 @@ button {
     font-size: 32px;
     justify-content: center;
     text-align: center;
-    transition: all 1.5s ease-in-out;
+    transition: left 1.5s ease-in-out,  top 1.5s ease-in-out, bottom 1.5s ease-in-out, right 1.5s ease-in-out, background-color 1.5s ease-in-out;
     width: 100%; }
   .results-container > div {
     position: absolute; }
@@ -117,6 +117,16 @@ button {
     background-color: #20a5c7;
     height: 15%;
     z-index: 1; }
+    .results-container .title .body {
+      overflow-y: auto; }
+      .results-container .title .body.large {
+        font-size: 42px; }
+      .results-container .title .body.medium {
+        font-size: 36px; }
+      .results-container .title .body.small {
+        font-size: 30px; }
+      .results-container .title .body.very-small {
+        font-size: 24px; }
   .results-container .subreddit {
     background-color: #1f6a96;
     height: 10%;
@@ -218,7 +228,13 @@ button {
   .information-container .created .body {
     font-size: 30px; }
 
-  .results-container .title .body {
+  .results-container .title .body.large {
+    font-size: 28px; }
+  .results-container .title .body.medium {
+    font-size: 24px; }
+  .results-container .title .body.small {
+    font-size: 20px; }
+  .results-container .title .body.very-small {
     font-size: 18px; }
   .results-container .positive-sentiment .body,
   .results-container .negative-sentiment .body {
