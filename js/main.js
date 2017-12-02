@@ -16,15 +16,15 @@ let RedditSA = (function () {
     negativeScore = 0;
     inProgress = false;
 
-    Object.keys(infoBoxes).forEach(box => {
-      infoBoxes[box].generateHtmlAndCss();
-    });
-
     loadActions();
   }
 
   let loadBoxes = (boxes) => {
     infoBoxes = boxes;
+
+    Object.keys(infoBoxes).forEach(box => {
+      infoBoxes[box].generateHtmlAndCss();
+    });
   }
 
   let getData = function (url = Constants.RandomUrl, isRandomReload = false) {
@@ -224,7 +224,7 @@ let RedditSA = (function () {
       }
     };
 
-    // $.post("/api/reddit-sa", body);
+    $.post("/api/reddit-sa", body);
   }
 
   let finishedReloadingRandom = () => {
@@ -261,7 +261,7 @@ let RedditSA = (function () {
     })();
   };
 
-  // Button Actions
+  // JQuery Bound Actions
   let loadActions = () => {
     $('#search-input').on('input', () => {
       let url = $('#search-input').val();
