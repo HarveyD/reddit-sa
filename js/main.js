@@ -3,12 +3,11 @@ const sentiment = require('sentiment');
 import { Constants } from './constants';
 import { InfoBox, SquareBox, RectangleBox, ButtonBox } from './info-box';
 
-let RedditSA = (function() {
+let RedditSA = (function () {
   let threadComments;
   let positiveScore;
   let negativeScore;
   let inProgress;
-
   let infoBoxes;
 
   let init = () => {
@@ -17,16 +16,18 @@ let RedditSA = (function() {
     negativeScore = 0;
     inProgress = false;
 
-    $('#random').click(() => {
-      getData();
+    Object.keys(infoBoxes).forEach(box => {
+      infoBoxes[box].generateHtmlAndCss();
     });
+
+    loadActions();
   }
 
   let loadBoxes = (boxes) => {
     infoBoxes = boxes;
   }
 
-  let getData = (url = Constants.RandomUrl, isRandomReload = false) => {
+  let getData = function (url = Constants.RandomUrl, isRandomReload = false) {
     if (inProgress) {
       return;
     }
@@ -226,6 +227,12 @@ let RedditSA = (function() {
     // $.post("/api/reddit-sa", body);
   }
 
+  let finishedReloadingRandom = () => {
+    $('#reload')
+      .css("width", '0px')
+      .css("height", '0px');
+  }
+
   let animateSentimentResult = (animationList, currentAnimationIndex = 0) => {
     const animationObj = animationList[currentAnimationIndex];
     const percentage = animationObj.score;
@@ -255,131 +262,129 @@ let RedditSA = (function() {
   };
 
   // Button Actions
-  $('#search-input').on('input', () => {
-    let url = $('#search-input').val();
+  let loadActions = () => {
+    $('#search-input').on('input', () => {
+      let url = $('#search-input').val();
 
-    const res = parseInput(url);
+      const res = parseInput(url);
 
-    if (res) {
-      $('#input-icon')
-        .removeClass('invalid fa-times')
-        .addClass('valid fa-check')
+      if (res) {
+        $('#input-icon')
+          .removeClass('invalid fa-times')
+          .addClass('valid fa-check')
 
-      $('#search-input')
-        .removeClass('invalid')
-        .addClass('valid');
-    } else {
-      $('#input-icon')
-        .removeClass('valid fa-check')
-        .addClass('invalid fa-times')
+        $('#search-input')
+          .removeClass('invalid')
+          .addClass('valid');
+      } else {
+        $('#input-icon')
+          .removeClass('valid fa-check')
+          .addClass('invalid fa-times')
 
-      $('#search-input')
-        .removeClass('valid')
-        .addClass('invalid');
-    }
-  });
-
-  $('#search').click(() => {
-    let url = $('#search-input').val();
-
-    if (!url) {
-      return;
-    }
-
-    const jsonUrl = parseInput(url);
-
-    if (!jsonUrl) {
-      return;
-    }
-
-    getData(jsonUrl);
-  });
-
-  let parseInput = (input) => {
-    const redditRegexCode = /^\w{6}$/;
-    const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\/r\/\w*\//;
-
-    if (redditRegexCode.exec(input)) {
-      return `${redditCodeUrl}${input}.json`;
-    } else if (redditRegexUrl.exec(input)) {
-      return input + '.json';
-    }
-
-    return null;
-  };
-
-  $('#random').click(() => {
-    getData();
-  });
-
-  $('.search-again').click(() => {
-    $('.results-container').css('bottom', '100%');
-    $('.main-container').show();
-
-    setTimeout(() => {
-      resetToMenu();
-    }, 2000);
-  });
-
-  let resetToMenu = () => {
-    resetState();
-
-    $('.results-container')
-      .hide()
-      .css('bottom', '0%');
-
-    Object.keys(infoBoxes).forEach(box => {
-      infoBoxes[box].resetPos();
+        $('#search-input')
+          .removeClass('valid')
+          .addClass('invalid');
+      }
     });
-  }
 
-  $('.feeling-lucky').click(() => {
-    getData(Constants.RandomUrl, true);
-    animateReloadRandom();
-  });
+    $('#search').click(() => {
+      let url = $('#search-input').val();
 
-  let animateReloadRandom = () => {
-    resetState();
+      if (!url) {
+        return;
+      }
 
-    $('#reload')
-      .css("width", `${$(window).height() * 2.75}px`)
-      .css("height", `${$(window).height() * 2.75}px`);
-  };
+      const jsonUrl = parseInput(url);
 
-  let resetState = () => {
-    threadComments = [];
-    totalScore = 0;
-    positiveScore = 0;
-    negativeScore = 0;
+      if (!jsonUrl) {
+        return;
+      }
 
-    $('.positive-sentiment').removeClass('positive')
-    $('.negative-sentiment').removeClass('negative');
-  }
+      getData(jsonUrl);
+    });
 
-  let finishedReloadingRandom = () => {
-    $('#reload')
-      .css("width", '0px')
-      .css("height", '0px');
+    let parseInput = (input) => {
+      const redditRegexCode = /^\w{6}$/;
+      const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\/r\/\w*\//;
+
+      if (redditRegexCode.exec(input)) {
+        return `${redditCodeUrl}${input}.json`;
+      } else if (redditRegexUrl.exec(input)) {
+        return input + '.json';
+      }
+
+      return null;
+    };
+
+    $('#random').click(() => {
+      getData();
+    });
+
+    $('.search-again').click(() => {
+      $('.results-container').css('bottom', '100%');
+      $('.main-container').show();
+
+      setTimeout(() => {
+        resetToMenu();
+      }, 2000);
+    });
+
+    let resetToMenu = () => {
+      resetState();
+
+      $('.results-container')
+        .hide()
+        .css('bottom', '0%');
+
+      Object.keys(infoBoxes).forEach(box => {
+        infoBoxes[box].resetPos();
+      });
+    }
+
+    $('.feeling-lucky').click(() => {
+      getData(Constants.RandomUrl, true);
+      animateReloadRandom();
+    });
+
+    let animateReloadRandom = () => {
+      resetState();
+
+      $('#reload')
+        .css("width", `${$(window).height() * 2.75}px`)
+        .css("height", `${$(window).height() * 2.75}px`);
+    };
+
+    let resetState = () => {
+      threadComments = [];
+      positiveScore = 0;
+      negativeScore = 0;
+
+      $('.positive-sentiment').removeClass('positive')
+      $('.negative-sentiment').removeClass('negative');
+    }
   }
 
   let publicAPI = {
     init: init,
-    loadBoxes: loadBoxes
+    loadBoxes: loadBoxes,
+    loadActions: loadActions
   }
 
   return publicAPI;
 })();
 
+RedditSA.loadBoxes({
+  'title': new RectangleBox('title', 'results-container', 1, 'bottom', 85, ''),
+  'subreddit': new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75, ''),
+  'comment-count': new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
+  'upvotes': new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
+  'created': new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
+  'positive-sentiment': new RectangleBox('positive-sentiment', 'results-container', 2000, 'top', 50, 'Positive Sentiment'),
+  'negative-sentiment': new RectangleBox('negative-sentiment', 'results-container', 2250, 'top', 70, 'Negative Sentiment'),
+  'search-again': new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
+  'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
+});
+
 $(document).ready(function () {
-  RedditSA.loadBoxes({
-    'title': new RectangleBox('title', 'results-container', 1, 'bottom', 85, ''),
-    'subreddit': new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75, ''),
-    'comment-count': new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
-    'upvotes': new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
-    'created': new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
-    'positive-sentiment': new RectangleBox('positive-sentiment', 'results-container', 2000, 'top', 50, 'Positive Sentiment'),
-    'negative-sentiment': new RectangleBox('negative-sentiment', 'results-container', 2250, 'top', 70, 'Negative Sentiment'),
-    'search-again': new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
-    'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
-  });
+  RedditSA.init();
 });

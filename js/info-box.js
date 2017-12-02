@@ -26,8 +26,6 @@ export class SquareBox extends InfoBox {
 	constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, icon) {
 		super(selector, parentSelector, animationDelay, animateFrom, animatePos);
 		this.icon = icon;
-
-		this.generateHtmlAndCss();
 	}
 
 	generateHtmlAndCss() {
@@ -46,8 +44,6 @@ export class RectangleBox extends InfoBox {
 	constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, title) {
 		super(selector, parentSelector, animationDelay, animateFrom, animatePos);
 		this.title = title;
-
-		this.generateHtmlAndCss();
 	}
 
 	generateHtmlAndCss() {
@@ -66,8 +62,6 @@ export class ButtonBox extends InfoBox {
 	constructor(selector, parentSelector, animationDelay, animateFrom, animatePos, title) {
 		super(selector, parentSelector, animationDelay, animateFrom, animatePos);
 		this.title = title;
-
-		this.generateHtmlAndCss();
 	}
 
 	generateHtmlAndCss() {
