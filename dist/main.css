@@ -88,8 +88,8 @@ button {
     color: #fff;
     font-size: 24px;
     height: 64px;
-    width: 164px;
-    transition: background-color .25s ease-in-out; }
+    transition: background-color .25s ease-in-out;
+    width: 164px; }
     .search-buttons-container button:hover {
       background-color: #44c4e7; }
   .search-buttons-container #search {
@@ -134,17 +134,19 @@ button {
   .results-container .information-container {
     height: 25%; }
   .results-container .positive {
-    background-color: #20b920 !important; }
+    background-color: #7ebb7e !important; }
     .results-container .positive .heading {
-      background-color: #107210 !important; }
+      background-color: #42ad42 !important; }
   .results-container .negative {
-    background-color: #c04a4a !important; }
+    background-color: #b86c6c !important; }
     .results-container .negative .heading {
-      background-color: #7e1616 !important; }
+      background-color: #ad3939 !important; }
   .results-container .positive-sentiment,
   .results-container .negative-sentiment {
     background-color: #dbcc43;
-    height: 20%; }
+    height: 20%;
+    transition: all 2s ease-in-out;
+    z-index: 3; }
     .results-container .positive-sentiment .heading,
     .results-container .negative-sentiment .heading {
       background-color: #b6a723;
@@ -153,7 +155,48 @@ button {
     .results-container .positive-sentiment .body,
     .results-container .negative-sentiment .body {
       font-size: 96px;
-      height: 75%; }
+      height: 75%;
+      overflow-y: auto; }
+    .results-container .positive-sentiment.fullscreen,
+    .results-container .negative-sentiment.fullscreen {
+      top: 0% !important;
+      height: 100%; }
+      .results-container .positive-sentiment.fullscreen .heading,
+      .results-container .negative-sentiment.fullscreen .heading {
+        height: 20%; }
+      .results-container .positive-sentiment.fullscreen .body,
+      .results-container .negative-sentiment.fullscreen .body {
+        height: 80%;
+        align-items: left;
+        justify-content: flex-start;
+        overflow-x: hidden; }
+        .results-container .positive-sentiment.fullscreen .body .comment,
+        .results-container .negative-sentiment.fullscreen .body .comment {
+          display: block;
+          justify-content: flex-start;
+          border-top: 1px solid white;
+          border-bottom: 1px solid white; }
+          .results-container .positive-sentiment.fullscreen .body .comment .comment-info,
+          .results-container .positive-sentiment.fullscreen .body .comment .comment-body,
+          .results-container .negative-sentiment.fullscreen .body .comment .comment-info,
+          .results-container .negative-sentiment.fullscreen .body .comment .comment-body {
+            padding-left: 16px;
+            padding-right: 16px;
+            align-items: left;
+            width: auto; }
+          .results-container .positive-sentiment.fullscreen .body .comment .comment-info,
+          .results-container .negative-sentiment.fullscreen .body .comment .comment-info {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            font-size: 16px;
+            text-align: left;
+            font-weight: bold;
+            color: black; }
+          .results-container .positive-sentiment.fullscreen .body .comment .comment-body,
+          .results-container .negative-sentiment.fullscreen .body .comment .comment-body {
+            text-align: left;
+            padding-bottom: 16px;
+            font-size: 20px; }
 
 .information-container {
   top: 25%; }
@@ -221,13 +264,11 @@ button {
   .main-container .input-container input {
     padding-right: 10%;
     width: 80%; }
-
   .information-container .upvotes .body,
   .information-container .comment-count .body {
     font-size: 36px; }
   .information-container .created .body {
     font-size: 30px; }
-
   .results-container .title .body.large {
     font-size: 28px; }
   .results-container .title .body.medium {
@@ -239,11 +280,13 @@ button {
   .results-container .positive-sentiment .body,
   .results-container .negative-sentiment .body {
     font-size: 72px; } }
+
 @keyframes rotating {
   from {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
 @-webkit-keyframes GradientBG {
   0% {
     background-position: 50% 0%; }
@@ -251,6 +294,7 @@ button {
     background-position: 51% 100%; }
   100% {
     background-position: 50% 0%; } }
+
 @-moz-keyframes GradientBG {
   0% {
     background-position: 50% 0%; }
@@ -258,6 +302,7 @@ button {
     background-position: 51% 100%; }
   100% {
     background-position: 50% 0%; } }
+
 @keyframes GradientBG {
   0% {
     background-position: 50% 0%; }
@@ -265,5 +310,3 @@ button {
     background-position: 51% 100%; }
   100% {
     background-position: 50% 0%; } }
-
-/*# sourceMappingURL=main.css.map */

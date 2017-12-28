@@ -9,6 +9,7 @@ let RedditSA = (function () {
   let negativeScore;
   let inProgress;
   let infoBoxes;
+  let resultState;
 
   let init = () => {
     threadComments = [];
@@ -16,15 +17,15 @@ let RedditSA = (function () {
     negativeScore = 0;
     inProgress = false;
 
+    Object.keys(infoBoxes).forEach(box => {
+      infoBoxes[box].generateHtmlAndCss();
+    });
+
     loadActions();
   }
 
   let loadBoxes = (boxes) => {
     infoBoxes = boxes;
-
-    Object.keys(infoBoxes).forEach(box => {
-      infoBoxes[box].generateHtmlAndCss();
-    });
   }
 
   let getData = function (url = Constants.RandomUrl, isRandomReload = false) {
@@ -38,7 +39,7 @@ let RedditSA = (function () {
       $('#random').html(`<i class="fa fa-refresh"></i>`) :
       $('#search').html(`<i class="fa fa-refresh"></i>`);
 
-    let httpGet = function () {
+    (function httpGet() {
       $.getJSON(url, (threadData) => {
         if (threadData.error && threadData.error === 404) {
           return;
@@ -73,9 +74,7 @@ let RedditSA = (function () {
         .done(() => {
           inProgress = false;
         });
-    };
-
-    httpGet();
+    })();
   };
 
   let hasOneOrNoComments = (postData) => {
@@ -112,15 +111,11 @@ let RedditSA = (function () {
 
   let getCommentsAndScore = (comments) => {
     comments.children.forEach((comment) => {
-      if (!comment || !comment.data) {
+      if (!comment || !comment.data || !comment.data.body) {
         return;
       }
 
       let commentData = comment.data.body;
-
-      if (!commentData) {
-        return;
-      }
 
       if (comment.data.replies.data) {
         getCommentsAndScore(comment.data.replies.data);
@@ -224,7 +219,7 @@ let RedditSA = (function () {
       }
     };
 
-    $.post("/api/reddit-sa", body);
+    // $.post("/api/reddit-sa", body);
   }
 
   let finishedReloadingRandom = () => {
@@ -362,6 +357,57 @@ let RedditSA = (function () {
       $('.positive-sentiment').removeClass('positive')
       $('.negative-sentiment').removeClass('negative');
     }
+
+    $('.positive-sentiment').click(() => {
+      if (resultState === 'positive-comments') {
+        resetToOverview();
+      } else {
+        populatePositiveComments();
+      }
+    });
+
+    let resetToOverview = () => {
+      resultState = 'overview';
+      
+      $('.positive-sentiment')
+        .removeClass('fullscreen');
+
+      $('.positive-sentiment .heading').html('Positive Sentiment');
+      $('.positive-sentiment .body').html(positiveScore + '%');
+
+      $('.negative-sentiment')
+        .removeClass('fullscreen');   
+    }
+
+    let populatePositiveComments = () => {
+      resultState = 'positive-comments';
+      
+      const positiveComments = threadComments
+        .slice(-10)
+        .reverse()
+        .filter(c => { return c.sentimentComparative > 0 });
+
+      $('.positive-sentiment')
+        .addClass('fullscreen');
+
+      $('.positive-sentiment .heading').append('<i class="fa fa-chevron-circle-down"></i>');
+      $('.positive-sentiment .body').html('');
+        
+      positiveComments.forEach(comment => {
+        $('.positive-sentiment .body')
+          .append(
+            `
+            <div class="comment">
+              <div class="comment-info">
+                ${comment.author} ${comment.ups} points ${new Date(parseFloat(comment.created_utc) * 1000).toDateString()}
+              </div>
+              <div class="comment-body">
+                ${comment.body}
+              </div>
+            </div>
+            `);
+      });
+    };
   }
 
   let publicAPI = {
