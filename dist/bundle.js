@@ -1,1 +1,0 @@
-console.error("Error: Parsing file /Users/delaneha/Documents/personal/reddit-sa/js/main.js: 'import' and 'export' may appear only with 'sourceType: module' (1:0)");

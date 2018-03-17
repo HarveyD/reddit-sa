@@ -1,18 +1,18 @@
 .html,
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'PT Sans', sans-serif;
   height: 100vh;
   margin: 0;
   overflow: hidden;
   padding: 0;
   width: 100vw;
 
-  background: linear-gradient(230deg, #c98de4, #96d7d7);
-  background-size: 400% 400%;
-  
-  -webkit-animation: GradientBG 13s ease infinite;
-  -moz-animation: GradientBG 13s ease infinite;
-  animation: GradientBG 13s ease infinite;
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.45),
+      rgba(0, 0, 0, 0.45)
+    ),
+    url('../images/reddit-sa-background.jpg');
 }
 
 body {
@@ -36,6 +36,7 @@ body {
     font-size: 32px;
     font-weight: bold;
     height: 25%;
+    margin-top: 3rem;
   }
 }
 
@@ -111,7 +112,7 @@ button {
   width: 100%;
 
   button {
-    background-color: #3497b3;
+    background-color: rgb(240, 171, 66);
     border: 0;
     border-radius: 4px;
     color: #fff;
@@ -121,7 +122,7 @@ button {
     width: 164px;
 
     &:hover {
-      background-color: #44c4e7;
+      background-color: rgb(255, 162, 31);
     }
   }
 
@@ -196,18 +197,18 @@ button {
   }
 
   .positive {
-    background-color: rgb(32, 185, 32)!important;
+    background-color: rgb(126, 187, 126)!important;
 
     .heading {
-      background-color: rgb(16, 114, 16)!important;
+      background-color: rgb(66, 173, 66)!important;
     }
   }
 
   .negative {
-    background-color: rgb(192, 74, 74)!important;
+    background-color: rgb(184, 108, 108)!important;
 
     .heading {
-      background-color: rgb(126, 22, 22)!important;
+      background-color: rgb(173, 57, 57)!important;
     }
   }
 
@@ -215,6 +216,8 @@ button {
   .negative-sentiment {
     background-color: rgb(219, 204, 67);
     height: 20%;
+    transition: all 2s ease-in-out;
+    z-index: 1;
 
     .heading {
       background-color: rgb(182, 167, 35);
@@ -225,6 +228,7 @@ button {
     .body {
       font-size: 96px;
       height: 75%;
+      overflow-y: auto;
     }
   }
 }
@@ -356,21 +360,21 @@ button {
   .results-container {
     .title {
       .body {
-          &.large {
-            font-size: 28px;
-          }
-    
-          &.medium {
-            font-size: 24px;
-          }
-    
-          &.small {
-            font-size: 20px;
-          }
-          
-          &.very-small {
-            font-size: 18px;
-          }
+        &.large {
+          font-size: 28px;
+        }
+
+        &.medium {
+          font-size: 24px;
+        }
+
+        &.small {
+          font-size: 20px;
+        }
+
+        &.very-small {
+          font-size: 18px;
+        }
       }
     }
 
@@ -392,21 +396,4 @@ button {
   to {
     transform: rotate(360deg);
   }
-}
-
-// // Gradient Animation
-@-webkit-keyframes GradientBG {
-  0%{background-position:50% 0%}
-  50%{background-position:51% 100%}
-  100%{background-position:50% 0%}
-}
-@-moz-keyframes GradientBG {
-  0%{background-position:50% 0%}
-  50%{background-position:51% 100%}
-  100%{background-position:50% 0%}
-}
-@keyframes GradientBG { 
-  0%{background-position:50% 0%}
-  50%{background-position:51% 100%}
-  100%{background-position:50% 0%}
 }
