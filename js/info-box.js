@@ -8,17 +8,25 @@ export class InfoBox {
 	}
 
 	updateBody(data) {
-		$(`.${this.selector} .body`).text(data);
+		$(`${this.getClassSelector} .body`).text(data);
 	}
 
 	animate() {
 		setTimeout(() => {
-			$(`.${this.selector}`).css(this.animateFrom, `${this.animatePos}%`)
+			$(this.getClassSelector).css(this.animateFrom, `${this.animatePos}%`)
 		}, this.animationDelay);
 	}
 
 	resetPos() {
-		$(`.${this.selector}`).css(this.animateFrom, `100%`)
+		$(this.getClassSelector).css(this.animateFrom, `100%`)
+	}
+	
+	get getClassSelector() {
+		return `.${this.selector}`;
+	}
+
+	get getParentClassSelector() {
+		return `.${this.parentSelector}`;
 	}
 }
 
@@ -29,7 +37,7 @@ export class SquareBox extends InfoBox {
 	}
 
 	generateHtmlAndCss() {
-		$(`.${this.parentSelector}`).append(`
+		$(this.getParentClassSelector).append(`
 		<div class="${this.selector}" style="${this.animateFrom}: 100%">
 			<div class="heading abs-center">
 				<i class="fa ${this.icon}"></i>
@@ -47,7 +55,7 @@ export class RectangleBox extends InfoBox {
 	}
 
 	generateHtmlAndCss() {
-		$(`.${this.parentSelector}`).append(`
+		$(this.getParentClassSelector).append(`
 			<div class="${this.selector}" style="${this.animateFrom}: 100%">
 				<div class="heading">
 						${this.title}
@@ -65,7 +73,7 @@ export class ButtonBox extends InfoBox {
 	}
 
 	generateHtmlAndCss() {
-		$(`.${this.parentSelector}`).append(`
+		$(this.getParentClassSelector).append(`
 			<span id="reload"></span>
 			<button class="${this.selector}" style="${this.animateFrom}: 100%">
 				${this.title || ''}

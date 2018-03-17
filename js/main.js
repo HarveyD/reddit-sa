@@ -1,7 +1,7 @@
-const sentiment = require('sentiment');
-
-import { Constants } from './constants';
+import { Constants, Box, Container } from './constants';
 import { InfoBox, SquareBox, RectangleBox, ButtonBox } from './info-box';
+
+let sentiment = require('sentiment');
 
 let RedditSA = (function () {
   let threadComments;
@@ -9,7 +9,6 @@ let RedditSA = (function () {
   let negativeScore;
   let inProgress;
   let infoBoxes;
-  let resultState;
 
   let init = () => {
     threadComments = [];
@@ -78,33 +77,32 @@ let RedditSA = (function () {
   };
 
   let hasOneOrNoComments = (postData) => {
-    return postData.num_comments <= 1 ? true : false;
+    return postData.num_comments <= 1
+      ? true
+      : false;
   }
 
   let populateInfoBoxes = (postData) => {
     setTitleSize(postData.title.length);
-    infoBoxes['title'].updateBody(postData.title);
-    infoBoxes['subreddit'].updateBody(postData.subreddit_name_prefixed);
-    infoBoxes['comment-count'].updateBody(postData.num_comments);
-    infoBoxes['upvotes'].updateBody(postData.ups);
-    infoBoxes['created'].updateBody(new Date(parseFloat(postData.created_utc) * 1000).toDateString());
+    infoBoxes[Box.Title].updateBody(postData.title);
+    infoBoxes[Box.Subreddit].updateBody(postData.subreddit_name_prefixed);
+    infoBoxes[Box.CommentCount].updateBody(postData.num_comments);
+    infoBoxes[Box.Upvote].updateBody(postData.ups);
+    infoBoxes[Box.CreatedDate].updateBody(new Date(parseFloat(postData.created_utc) * 1000).toDateString());
   }
 
   let setTitleSize = (titleSize) => {
-    let fontSize = 28;
     let fontClass = 'large';
+
     if (titleSize > 120) {
       fontClass = 'very-small';
-      fontSize = 18
     } else if (titleSize > 90) {
       fontClass = 'small';
-      fontSize = 20;
     } else if (titleSize > 60) {
       fontClass = 'medium';
-      fontSize = 24
     }
 
-    $('.results-container .title .body')
+    $(`${Container.Results.asSelector()} .title .body`)
       .removeClass('large very-small small medium')
       .addClass(fontClass);
   }
@@ -177,21 +175,32 @@ let RedditSA = (function () {
   };
 
   let displayResults = (isRandomReload) => {
-    $('.main-container').hide();
-    $('.results-container').show();
-    infoBoxes['positive-sentiment'].updateBody('0%');
-    infoBoxes['negative-sentiment'].updateBody('0%');
+    $(Container.Main.asSelector()).hide();
+    $(Container.Results.asSelector()).show();
+
+    infoBoxes[Box.PositiveSentiment].updateBody('0%');
+    infoBoxes[Box.NegativeSentiment].updateBody('0%');
 
     Object.keys(infoBoxes).forEach(box => {
       infoBoxes[box].animate();
     });
 
-    const animationDelay = isRandomReload ? 750 : 2500;
+    const animationDelay = isRandomReload
+      ? 750
+      : 2500;
 
     setTimeout(() => {
       animateSentimentResult([
-        { score: positiveScore, selector: 'positive-sentiment', colorClass: 'positive' },
-        { score: negativeScore, selector: 'negative-sentiment', colorClass: 'negative' }
+        { 
+          score: positiveScore,
+          infoBox: infoBoxes[Box.PositiveSentiment],
+          colorClass: 'positive' 
+        },
+        {
+          score: negativeScore,
+          infoBox: infoBoxes[Box.NegativeSentiment],
+          colorClass: 'negative'
+        }
       ]);
     }, animationDelay);
   };
@@ -229,14 +238,18 @@ let RedditSA = (function () {
   }
 
   let animateSentimentResult = (animationList, currentAnimationIndex = 0) => {
-    const animationObj = animationList[currentAnimationIndex];
-    const percentage = animationObj.score;
-    const selector = animationObj.selector;
+    const currentAnimation = animationList[currentAnimationIndex];
+    
+    if (!currentAnimation) {
+      throw new Error('Incorrect Infobox Provided to be animated');
+    }
+
+    const percentage = currentAnimation.score;
 
     let currentPercent = 0;
     let currentSpeed = 25;
 
-    $(`.${selector}`).addClass(animationObj.colorClass);
+    $(currentAnimation.infoBox.selector.asSelector()).addClass(currentAnimation.colorClass);
 
     (function animate() {
       setTimeout(() => {
@@ -245,7 +258,7 @@ let RedditSA = (function () {
         const completion = currentPercent / percentage;
         currentSpeed = completion * 100;
 
-        infoBoxes[selector].updateBody(currentPercent + '%');
+        currentAnimation.infoBox.updateBody(`${currentPercent}%`);
 
         if (completion < 1 && !inProgress) {
           animate();
@@ -256,7 +269,6 @@ let RedditSA = (function () {
     })();
   };
 
-  // JQuery Bound Actions
   let loadActions = () => {
     $('#search-input').on('input', () => {
       let url = $('#search-input').val();
@@ -303,7 +315,7 @@ let RedditSA = (function () {
       const redditRegexUrl = /^(https|http):\/\/(www)?.reddit.com\/r\/\w*\//;
 
       if (redditRegexCode.exec(input)) {
-        return `${redditCodeUrl}${input}.json`;
+        return `${Constants.redditCodeUrl}${input}.json`;
       } else if (redditRegexUrl.exec(input)) {
         return input + '.json';
       }
@@ -315,9 +327,9 @@ let RedditSA = (function () {
       getData();
     });
 
-    $('.search-again').click(() => {
-      $('.results-container').css('bottom', '100%');
-      $('.main-container').show();
+    $(Box.Search.asSelector()).click(() => {
+      $(Container.Results.asSelector()).css('bottom', '100%');
+      $(Container.Main.asSelector()).show();
 
       setTimeout(() => {
         resetToMenu();
@@ -327,7 +339,7 @@ let RedditSA = (function () {
     let resetToMenu = () => {
       resetState();
 
-      $('.results-container')
+      $(Container.Results.asSelector())
         .hide()
         .css('bottom', '0%');
 
@@ -336,7 +348,7 @@ let RedditSA = (function () {
       });
     }
 
-    $('.feeling-lucky').click(() => {
+    $(Box.Random.asSelector()).click(() => {
       getData(Constants.RandomUrl, true);
       animateReloadRandom();
     });
@@ -345,8 +357,8 @@ let RedditSA = (function () {
       resetState();
 
       $('#reload')
-        .css("width", `${$(window).height() * 2.75}px`)
-        .css("height", `${$(window).height() * 2.75}px`);
+        .css("width", `${$(window).height() * Constants.ReloadFactor}px`)
+        .css("height", `${$(window).height() * Constants.ReloadFactor}px`);
     };
 
     let resetState = () => {
@@ -354,30 +366,14 @@ let RedditSA = (function () {
       positiveScore = 0;
       negativeScore = 0;
 
-      $('.positive-sentiment').removeClass('positive')
-      $('.negative-sentiment').removeClass('negative');
+      $(Box.PositiveSentiment.asSelector()).removeClass('positive');
+      $(Box.NegativeSentiment.asSelector()).removeClass('negative');
     }
 
-    $('.positive-sentiment').click(() => {
-      if (resultState === 'positive-comments') {
-        resetToOverview();
-      } else {
-        populatePositiveComments();
-      }
+    /* Todo: Add details on top 10 negative and positive comments
+    $(Box.PositiveSentiment.asSelector()).click(() => {
+      populatePositiveComments();
     });
-
-    let resetToOverview = () => {
-      resultState = 'overview';
-      
-      $('.positive-sentiment')
-        .removeClass('fullscreen');
-
-      $('.positive-sentiment .heading').html('Positive Sentiment');
-      $('.positive-sentiment .body').html(positiveScore + '%');
-
-      $('.negative-sentiment')
-        .removeClass('fullscreen');   
-    }
 
     let populatePositiveComments = () => {
       resultState = 'positive-comments';
@@ -387,27 +383,10 @@ let RedditSA = (function () {
         .reverse()
         .filter(c => { return c.sentimentComparative > 0 });
 
-      $('.positive-sentiment')
+      $(Box.PositiveSentiment.getClassSelector)
         .addClass('fullscreen');
-
-      $('.positive-sentiment .heading').append('<i class="fa fa-chevron-circle-down"></i>');
-      $('.positive-sentiment .body').html('');
-        
-      positiveComments.forEach(comment => {
-        $('.positive-sentiment .body')
-          .append(
-            `
-            <div class="comment">
-              <div class="comment-info">
-                ${comment.author} ${comment.ups} points ${new Date(parseFloat(comment.created_utc) * 1000).toDateString()}
-              </div>
-              <div class="comment-body">
-                ${comment.body}
-              </div>
-            </div>
-            `);
-      });
-    };
+    }
+    */
   }
 
   let publicAPI = {
@@ -420,17 +399,21 @@ let RedditSA = (function () {
 })();
 
 RedditSA.loadBoxes({
-  'title': new RectangleBox('title', 'results-container', 1, 'bottom', 85, ''),
-  'subreddit': new RectangleBox('subreddit', 'results-container', 500, 'bottom', 75, ''),
-  'comment-count': new SquareBox('comment-count', 'information-container', 500, 'right', 0, 'fa-comments'),
-  'upvotes': new SquareBox('upvotes', 'information-container', 1000, 'right', 33.33, 'fa-arrow-circle-up'),
-  'created': new SquareBox('created', 'information-container', 1500, 'right', 66.67, 'fa-calendar'),
-  'positive-sentiment': new RectangleBox('positive-sentiment', 'results-container', 2000, 'top', 50, 'Positive Sentiment'),
-  'negative-sentiment': new RectangleBox('negative-sentiment', 'results-container', 2250, 'top', 70, 'Negative Sentiment'),
-  'search-again': new ButtonBox('search-again', 'buttons-container', 2500, 'right', 50, 'Search'),
-  'feeling-lucky': new ButtonBox('feeling-lucky', 'buttons-container', 2500, 'left', 50, 'Random Post')
+  [Box.Title]: new RectangleBox(Box.Title, Container.Results, 1, 'bottom', 85, ''),
+  [Box.Subreddit]: new RectangleBox(Box.Subreddit, Container.Results, 500, 'bottom', 75, ''),
+  [Box.CommentCount]: new SquareBox(Box.CommentCount, Container.Information, 500, 'right', 0, 'fa-comments'),
+  [Box.Upvote]: new SquareBox(Box.Upvote, Container.Information, 1000, 'right', 33.33, 'fa-arrow-circle-up'),
+  [Box.CreatedDate]: new SquareBox(Box.CreatedDate, Container.Information, 1500, 'right', 66.67, 'fa-calendar'),
+  [Box.PositiveSentiment]: new RectangleBox(Box.PositiveSentiment, Container.Results, 2000, 'top', 50, 'Positive Sentiment'),
+  [Box.NegativeSentiment]: new RectangleBox(Box.NegativeSentiment, Container.Results, 2250, 'top', 70, 'Negative Sentiment'),
+  [Box.Search]: new ButtonBox(Box.Search, Container.Buttons, 2500, 'right', 50, 'Search'),
+  [Box.Random]: new ButtonBox(Box.Random, Container.Buttons, 2500, 'left', 50, 'Random Post')
 });
 
 $(document).ready(function () {
   RedditSA.init();
 });
+
+String.prototype.asSelector = function() {
+    return `.${this}`;
+}
