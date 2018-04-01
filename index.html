@@ -1,54 +1,53 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <title> Reddit Sentiment Analysis </title>
+      
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An easy way to identify the overall positive and negative sentiment percentage in a reddit comment thread."/>
 
-<head>
-  <title> Reddit Sentiment Analysis </title>
-    
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An easy way to identify the overall positive and negative sentiment percentage in a reddit comment thread."/>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+  </head>
 
-  <link rel="stylesheet" href="./dist/main.css">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-</head>
+  <body>
+    <div class="main-container">
+      <div class="heading abs-center">
+          <h1> Reddit Thread Sentiment Analysis </h1>
+      </div>
 
-<body>
-  <div class="main-container">
-		<div class="heading abs-center">
-				<h1> Reddit Thread Sentiment Analysis </h1>
+      <div class="search-container">
+        <span class="input-description"> Enter a reddit comment thread URL or code to analyse its sentiment! </span>
+        <div class="input-container">
+          <i id="input-icon" class="fa fa-check"></i>
+          <input id="search-input" type="text"/>
+        </div>
+        
+        <div class="search-buttons-container">
+            <button id="search" type="button"> Analyse </button>
+            <button id="random" type="button"> Random </button>
+        </div>
+      </div>
     </div>
 
-		<div class="search-container">
-      <span class="input-description"> Enter a reddit comment thread URL or code to analyse its sentiment! </span>
-      <div class="input-container">
-        <i id="input-icon" class="fa fa-check"></i>
-        <input id="search-input" type="text"/>
-      </div>
-      
-      <div class="search-buttons-container">
-          <button id="search" type="button"> Analyse </button>
-          <button id="random" type="button"> Random </button>
-      </div>
-		</div>
-	</div>
+    <div class="results-container">
+      <div class="information-container"></div>
+      <div class="buttons-container"></div>
+    </div>
+  </body>
 
-  <div class="results-container">
-    <div class="information-container"></div>
-    <div class="buttons-container"></div>
-  </div>
-</body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="main.js"></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="./dist/main.js"></script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-98365855-2', 'auto');
-  ga('send', 'pageview', location.pathname);
-</script>
+    ga('create', 'UA-98365855-2', 'auto');
+    ga('send', 'pageview', location.pathname);
+  </script>
 </html>
