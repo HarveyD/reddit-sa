@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Sentiment Analaysis for Reddit",
   "main": "index.js",
+  "repository": {
+    "url": "https://github.com/HarveyD/reddit-sa.git"
+  },
   "scripts": {
     "start": "watchify js/main.js -o dist/bundle.js && sass --watch css/main.scss:dist/main.css",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +13,7 @@
   "author": "Harvey Delaney",
   "license": "ISC",
   "dependencies": {
+    "gulp-htmlmin": "^4.0.0",
     "sentiment": "^4.1.0"
   },
   "devDependencies": {
@@ -19,6 +23,7 @@
     "browserify": "^14.5.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
+    "gulp-imagemin": "^4.1.0",
     "gulp-livereload": "^3.8.1",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.1",
