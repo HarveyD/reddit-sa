@@ -12,7 +12,7 @@ const imagemin = require('gulp-imagemin');
 const htmlmin = require('gulp-htmlmin');
 
 gulp.task('build', function () {
-	return browserify({ entries: './js/main.js', debug: true })
+	return browserify({ entries: './src/js/main.js', debug: true })
 		.transform("babelify", { presets: ['es2015'] })
 		.bundle()
 		.pipe(source('main.js'))
@@ -25,31 +25,31 @@ gulp.task('build', function () {
 });
 
 gulp.task('sass', function () {
-	return gulp.src('css/*.scss')
+	return gulp.src('src/css/*.scss')
 		.pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
 		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('image', () => {
-	return gulp.src('images/*')
+	return gulp.src('src/images/*')
 		.pipe(imagemin())
 		.pipe(gulp.dest('dist/images'))
 });
 
 gulp.task('html', function() {
-  return gulp.src('*.html')
+  return gulp.src('src/*.html')
     .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', ['build', 'sass', 'html', 'image'], function () {
 	livereload.listen();
-	gulp.watch('./js/*.js', ['build']);
-	gulp.watch('./css/*.scss', ['sass']);
-	gulp.watch('./images/*', ['image']);
-	gulp.watch('./*.html', ['html']);
+	gulp.watch('./src/js/*.js', ['build']);
+	gulp.watch('./src/css/*.scss', ['sass']);
+	gulp.watch('./src/images/*', ['image']);
+	gulp.watch('./src/*.html', ['html']);
 });
 
-gulp.task('build:prod', ['build', 'sass', 'html', 'image']);
+gulp.task('prod', ['build', 'sass', 'html', 'image']);
 
 gulp.task('default', ['watch']);

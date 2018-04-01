@@ -7,7 +7,8 @@
     "url": "https://github.com/HarveyD/reddit-sa.git"
   },
   "scripts": {
-    "start": "watchify js/main.js -o dist/bundle.js && sass --watch css/main.scss:dist/main.css",
+    "build": "gulp prod",
+    "dev": "gulp watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Harvey Delaney",
