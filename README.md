@@ -1,4 +1,5 @@
 # Reddit Sentiment Analysis
+[![Build Status](https://jenkins.harveydelaney.com/buildStatus/icon?job=reddit-sa)](https://jenkins.harveydelaney.com/job/reddit-sa/)
 
 ![redditsa](https://i.imgur.com/MCHctC3.jpg)
 
